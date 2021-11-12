@@ -1,0 +1,233 @@
+<html>
+    <head>
+        <style id="generatedStylesheet"></style>
+    </head>
+    <body>
+        <h2>Input your prompt</h2>
+        <input id="prompt-input" type="text" placeholder="random prompt here" />
+
+        <input id="prompt-img" type="file" onchange="previewFile()" accept="image/png, image/*" />
+        <p>Image to use</p>
+        <img src="./sample-background.jpg" height="200" id="prompt-img-preview" />
+
+        <div onclick="getComponent()" style="margin:15px;padding: 10px;background-color: yellow;width:fit-content;border:1px solid black;cursor:pointer;">Get component</div>
+        <hr/>
+        <h2>Component to predict:</h2>
+        <iframe id="ml-iframe" width="500px" height="500px">
+        
+        </iframe>
+        <h2>Component to predict Image:</h2>
+        <div id="component-image">
+            <canvas id="canvas" style="transform: scale(.5);"></canvas>
+                <img id="canvas-img" style="display:block;"></img>
+        </div>
+        
+        <hr/>
+        <div id="generated-component-wrapper">
+            <h2>Generated component:</h2>
+            <div id="generated-component">
+
+            </div>
+        </div>
+    </body>
+    <!-- <script src="node_modules/rasterizehtml/dist/rasterizeHTML.allinone.js" type="text/javascript"></script> -->
+    <style>
+        #component-image.showing {
+            transform: translateX(calc(-500px / 2)) translateY(calc(-150px / 2));
+            z-index: -1;
+        }
+        #generated-component-wrapper {
+            position: fixed;
+            display: none;
+            right: 0;
+            width: 50vw;
+            top: 0;
+            background-color: white;
+            border: 1px solid black;
+            height: 100vh;
+            padding: 5px;
+        }
+        iframe {
+            border: 0;
+        }
+        body {
+            margin: 0;
+        }
+    </style>
+
+    <script src="https://unpkg.com/computed-style-to-inline-style"></script>
+    <script type="text/javascript" src="https://unpkg.com/canvg@3.0.4/lib/umd.js"></script>
+    <script type="text/javascript">
+
+            function previewFile(e) {
+                const preview = document.getElementById('prompt-img-preview');
+                const file = document.getElementById('prompt-img').files[0];
+                const reader = new FileReader();
+
+                reader.addEventListener('load', () => {
+                    preview.src = reader.result;
+                }, false);
+
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            }   
+
+            function getComponent() {
+                var prompt = document.getElementById('prompt-input').value; // "Generate something that looks like me"
+                fetch(`http://localhost:5000/generate-post`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        image: document.getElementById('prompt-img-preview').src,
+                        prompt: prompt
+                    })
+                })
+                .then(res => {
+                    res.json()
+                    .then(result => {
+                        // console.log('result', result.html);
+                        injectComponent(result.html);
+                        injectStylesheet(result.stylesheet);
+                        // html2Png(result.inline_styles);
+                    })
+                })
+            }
+
+            function injectStylesheet(styles) {
+                
+                var frame = document.getElementById("ml-iframe");
+                var stylesheet = frame.contentDocument.querySelector('#generatedStylesheet');
+
+                var stylesheet = frame.contentDocument.getElementById('generatedStylesheet')
+                if (stylesheet) {
+                    stylesheet.innerHTML = styles;
+                    // stylesheet.parentNode.removeChild(stylesheet);
+                }   
+                else {
+                    // Create new
+                    var newStylesheet = frame.contentDocument.createElement('style');
+                    newStylesheet.id = 'generatedStylesheet';
+                    newStylesheet.innerHTML = styles;
+                    frame.contentDocument.head.appendChild(newStylesheet);
+                }
+            }
+
+            function injectComponent(componentString) {
+                var frame = document.getElementById("ml-iframe");
+                frame.contentDocument.body.innerHTML = componentString;
+                frame.contentDocument.body.style.margin = "0";
+                var html = frame.contentDocument.querySelector('html');
+                html.style.overflow = 'hidden';
+            }
+
+            // https://stackoverflow.com/questions/10721884/render-html-to-an-image
+            function html2Png(inlineStyles) {
+                console.log('inlinestyles: ', inlineStyles);
+                // Moves all styling to be inline.
+                var frame = document.getElementById("ml-iframe").contentDocument.body;
+                computedStyleToInlineStyle(frame, {
+                    recursive: true,
+                    properties: inlineStyles,
+                    //['z-index','position','color'],//undefined,
+                });
+                var htmlString = document.getElementById("ml-iframe")
+                    .contentDocument.body//querySelector('body')
+                    .innerHTML;
+
+                // const {body} = document;
+                var scale = 2;
+                // console.log(htmlString)
+
+                const canvas = document.getElementById('canvas')
+                const ctx = canvas.getContext('2d')
+                canvas.width = 500 * scale;
+                canvas.height = 500 * scale;
+
+                const tempImg = document.getElementById('canvas-img')
+                tempImg.addEventListener('load', onTempImageLoad)
+                var imgSvg = `${/*encodeURIComponent(*/`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="${500 * scale}" height="${500 * scale}">
+                            <foreignObject width="100%" height="100%" style="transform:scale(${scale/2});">
+                                <div xmlns="http://www.w3.org/1999/xhtml">
+                                    ${htmlString}
+                                </div>
+                            </foreignObject>
+                        </svg>
+                    `/*)*/}`
+                imgSvg.replace(/%0A\s+/g,'');
+                //Replace image using regex.
+                var m = imgSvg.match(/<img[^>]+/);
+                if (m) {
+                    var endIndex = m.index + m[0].length;
+                    imgSvg = imgSvg.substring(0, endIndex) + "/" + imgSvg.substring(endIndex);
+                }
+
+                tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
+                console.log('tempImg.src: ', tempImg.src);
+
+                const targetImg = document.getElementById('canvas-img')
+                // body.appendChild(targetImg)
+
+                function onTempImageLoad(e){
+                    // console.log("image loaded: ", e.target);
+                    ctx.drawImage(e.target, 0, 0)
+                    targetImg.src = canvas.toDataURL(); //"image/png"
+
+                    // const link = document.createElement('a')
+                    // link.href = canvas.toDataURL();
+                    // link.download = 'test component images/test.png';
+                    // document.body.appendChild(link)
+                    // link.click()
+                    // document.body.removeChild(link)
+                }
+
+                document.querySelector("#component-image").classList.add("showing");
+            }
+
+    </script>
+</html>
+
+
+<!-- function html2Png3(inlineStyles) {
+                
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    var frame = document.getElementById("ml-iframe").contentDocument.body;
+    computedStyleToInlineStyle(frame, {
+        recursive: true,
+        properties: inlineStyles,
+        //['z-index','position','color'],//undefined,
+    });
+    var htmlString = document.getElementById("ml-iframe")
+        .contentDocument.body//querySelector('body')
+        .innerHTML;
+
+    // const {body} = document;
+    var scale = 1//2;
+    
+    var imgSvg = `${/*encodeURIComponent(*/`
+        <svg xmlns="http://www.w3.org/2000/svg" width="${500 * scale}" height="${500 * scale}">
+            <foreignObject width="100%" height="100%" style="transform:scale(${scale});">
+                <div xmlns="http://www.w3.org/1999/xhtml">
+                    ${htmlString}
+                </div>
+            </foreignObject>
+        </svg>
+        `/*)*/}`
+    imgSvg.replace(/%0A\s+/g,'');
+    //Replace image using regex.
+    var m = imgSvg.match(/<img[^>]+/);
+    if (m) {
+        var endIndex = m.index + m[0].length;
+        imgSvg = imgSvg.substring(0, endIndex) + "/" + imgSvg.substring(endIndex);
+    }
+    
+    v = canvg.Canvg.fromString(ctx, imgSvg);
+
+    // Start SVG rendering with animations and mouse handling.
+    v.start();
+
+
+} -->
