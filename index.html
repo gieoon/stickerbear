@@ -12,40 +12,49 @@
 
         <div onclick="getComponent()" style="margin:15px;padding: 10px;background-color: yellow;width:fit-content;border:1px solid black;cursor:pointer;">Get component</div>
         <hr/>
-        <h2>Component to predict:</h2>
-        <iframe id="ml-iframe" width="500px" height="500px">
+        <!-- <h2>Component to predict:</h2> -->
+        <!-- <iframe id="ml-iframe" width="500px" height="500px">
         
-        </iframe>
-        <h2>Component to predict Image:</h2>
-        <div id="component-image">
-            <canvas id="canvas" style="transform: scale(.5);"></canvas>
-                <img id="canvas-img" style="display:block;"></img>
-        </div>
+        </iframe> -->
+
+        <!-- <h2>SVG component:</h2>
+        <div id="svg-component"></div> -->
+
+        <!-- <h2>Component to predict Image:</h2>
+        <img id="component-image2"></img> -->
+        <!-- <div id="component-image">
+            <canvas id="canvas" style="transform: scale(1); position:absolute; pointer-events:none; visibility:hidden;"></canvas>
+                <img id="canvas-img" style="display:none;"></img>
+        </div> -->
         
-        <hr/>
+        <!-- <hr/>
         <div id="generated-component-wrapper">
             <h2>Generated component:</h2>
             <div id="generated-component">
 
             </div>
-        </div>
+        </div> -->
+
+        <div id="results-wrapper"></div>
     </body>
     <!-- <script src="node_modules/rasterizehtml/dist/rasterizeHTML.allinone.js" type="text/javascript"></script> -->
     <style>
         #component-image.showing {
-            transform: translateX(calc(-500px / 2)) translateY(calc(-150px / 2));
+            /* transform: translateX(calc(-500px / 2)) translateY(calc(-150px / 2)); */
             z-index: -1;
         }
-        #generated-component-wrapper {
+        #results-wrapper {
             position: fixed;
-            display: none;
             right: 0;
-            width: 50vw;
+            width: 520px;
             top: 0;
             background-color: white;
             border: 1px solid black;
             height: 100vh;
             padding: 5px;
+
+            overflow: scroll;
+            max-height: 100vh;
         }
         iframe {
             border: 0;
@@ -57,6 +66,7 @@
 
     <script src="https://unpkg.com/computed-style-to-inline-style"></script>
     <script type="text/javascript" src="https://unpkg.com/canvg@3.0.4/lib/umd.js"></script>
+    <script src="./html2canvas.min.js"></script>
     <script type="text/javascript">
 
             function previewFile(e) {
@@ -74,29 +84,55 @@
             }   
 
             function getComponent() {
+                // Empty the list.
+                document.getElementById('results-wrapper').innerHTML = "";
+
                 var prompt = document.getElementById('prompt-input').value; // "Generate something that looks like me"
-                fetch(`http://localhost:5000/generate-post`, {
+                fetch(`http://localhost:5000/generate-multiple`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         image: document.getElementById('prompt-img-preview').src,
-                        prompt: prompt
+                        prompt: prompt,
+                        palette: {
+                            background: 'rgb(255,0,0)',
+                            primary: 'rgb(0,255,0)',
+                            selected: 'rgb(0,0,255)',
+                        }
                     })
                 })
                 .then(res => {
                     res.json()
-                    .then(result => {
-                        // console.log('result', result.html);
-                        injectComponent(result.html);
-                        injectStylesheet(result.stylesheet);
+                    .then(results => {
+                        var container = document.getElementById('results-wrapper');
+                        for (var result of results) {
+                            var frame = document.createElement('iframe');
+                            frame.style.width = '500px';
+                            frame.style.height = '500px';
+                            container.appendChild(frame);
+                            container.appendChild(document.createElement('hr'));
+                            frame.contentDocument.body.innerHTML = `
+                            <div id="component-image">
+                                <canvas id="canvas" width="500px" height="500px" style="transform: scale(1); position:absolute; pointer-events:none; visibility:hidden;"></canvas>
+                                <img id="canvas-img" style="display:block;"></img>
+                            </div>
+                            `
+                            injectComponent(frame, result.html);
+                            injectStylesheet(frame, result.stylesheet);
+                            html2Png(frame, result.inline_styles);
+                        }
+                        // console.log('result', result.stylesheet);
+                        // injectComponent(result.html);
+                        // injectStylesheet(result.stylesheet);
+                        // // injectImage(result.png)
                         // html2Png(result.inline_styles);
                     })
                 })
             }
 
-            function injectStylesheet(styles) {
+            function injectStylesheet(frame, styles) {
                 
-                var frame = document.getElementById("ml-iframe");
+                // var frame = document.getElementById("ml-iframe");
                 var stylesheet = frame.contentDocument.querySelector('#generatedStylesheet');
 
                 var stylesheet = frame.contentDocument.getElementById('generatedStylesheet')
@@ -113,48 +149,60 @@
                 }
             }
 
-            function injectComponent(componentString) {
-                var frame = document.getElementById("ml-iframe");
-                frame.contentDocument.body.innerHTML = componentString;
+            function injectComponent(frame, componentString) {
+                // var frame = document.getElementById("ml-iframe");
+                frame.contentDocument.body.innerHTML += '<div class="read-me" style="visibility:hidden;">' + componentString + "</div>";
                 frame.contentDocument.body.style.margin = "0";
                 var html = frame.contentDocument.querySelector('html');
                 html.style.overflow = 'hidden';
             }
 
+            // function injectImage(png) {
+            //     console.log('png: ', png);
+            //     var image = document.getElementById('component-image2');
+            //     image.src = png;
+            // }
+
+            // Using SVG
             // https://stackoverflow.com/questions/10721884/render-html-to-an-image
-            function html2Png(inlineStyles) {
-                console.log('inlinestyles: ', inlineStyles);
+            function html2Png(frame, inlineStyles) {
+                // console.log('inlinestyles: ', inlineStyles);
                 // Moves all styling to be inline.
-                var frame = document.getElementById("ml-iframe").contentDocument.body;
-                computedStyleToInlineStyle(frame, {
-                    recursive: true,
-                    properties: inlineStyles,
-                    //['z-index','position','color'],//undefined,
-                });
-                var htmlString = document.getElementById("ml-iframe")
-                    .contentDocument.body//querySelector('body')
+                // var frame = document.getElementById("ml-iframe").contentDocument.body;
+                computedStyleToInlineStyle(
+                    frame.contentDocument.body
+                    .querySelector('.read-me'),
+                    {
+                        recursive: true,
+                        properties: inlineStyles,
+                        //['z-index','position','color'],//undefined,
+                    });
+                var htmlString = frame//document.getElementById("ml-iframe")
+                    .contentDocument.body
+                    .querySelector('.read-me')
                     .innerHTML;
 
                 // const {body} = document;
-                var scale = 2;
+                var scale = 1;
                 // console.log(htmlString)
 
-                const canvas = document.getElementById('canvas')
-                const ctx = canvas.getContext('2d')
-                canvas.width = 500 * scale;
-                canvas.height = 500 * scale;
+                // const canvas = document.getElementById('canvas')
+                // const ctx = canvas.getContext('2d')
+                // canvas.width = 500 * scale;
+                // canvas.height = 500 * scale;
 
-                const tempImg = document.getElementById('canvas-img')
-                tempImg.addEventListener('load', onTempImageLoad)
+                // const tempImg = frame.contentDocument.getElementById('canvas-img')
+                // tempImg.addEventListener('load', onTempImageLoad)
                 var imgSvg = `${/*encodeURIComponent(*/`
                         <svg xmlns="http://www.w3.org/2000/svg" width="${500 * scale}" height="${500 * scale}">
-                            <foreignObject width="100%" height="100%" style="transform:scale(${scale/2});">
+                            <foreignObject width="100%" height="100%" style="transform:scale(${scale});">
                                 <div xmlns="http://www.w3.org/1999/xhtml">
                                     ${htmlString}
                                 </div>
                             </foreignObject>
                         </svg>
                     `/*)*/}`
+                
                 imgSvg.replace(/%0A\s+/g,'');
                 //Replace image using regex.
                 var m = imgSvg.match(/<img[^>]+/);
@@ -163,26 +211,80 @@
                     imgSvg = imgSvg.substring(0, endIndex) + "/" + imgSvg.substring(endIndex);
                 }
 
-                tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
-                console.log('tempImg.src: ', tempImg.src);
+                // var svgComponent = document.querySelector('#svg-component');
+                // svgComponent.innerHTML = imgSvg;
+                // console.log(imgSvg);
+                svg2Png(frame, imgSvg);
 
-                const targetImg = document.getElementById('canvas-img')
+                // tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
+                // console.log('imgSvg: ', imgSvg);
+
+                // const targetImg = document.getElementById('canvas-img')
+                // const targetImg = document.getElementById('component-image2');
                 // body.appendChild(targetImg)
+                // const canvas = document.getElementById('canvas')
+                // const ctx = canvas.getContext('2d')
 
-                function onTempImageLoad(e){
-                    // console.log("image loaded: ", e.target);
-                    ctx.drawImage(e.target, 0, 0)
-                    targetImg.src = canvas.toDataURL(); //"image/png"
+                // function onTempImageLoad(e){
+                //     // console.log("image loaded: ", e.target);
+                    
+                //     ctx.drawImage(e.target, 0, 0)
+                //     // targetImg.src = canvas.toDataURL(); //"image/png"
+                //     targetImg.src = canvas.toDataURL("image/png");
+                //     console.log("targetImg.src: ", targetImg.src);
+                //     const link = document.createElement('a')
+                //     link.href = canvas.toDataURL();
+                //     link.innerHTML = "DOWNLOAD IMAGE";
+                //     link.download = 'test component images/test.png';
+                //     frame.contentDocument.body.appendChild(link)
+                //     // link.click();
+                // }
 
-                    // const link = document.createElement('a')
-                    // link.href = canvas.toDataURL();
-                    // link.download = 'test component images/test.png';
-                    // document.body.appendChild(link)
-                    // link.click()
-                    // document.body.removeChild(link)
+                // document.querySelector("#component-image").classList.add("showing");
+            }
+
+            function svg2Png(frame, svgString) {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(svgString, "image/svg+xml");
+                var svg = doc.documentElement;
+                const canvas = frame.contentDocument.getElementById('canvas')
+                const ctx = canvas.getContext('2d')
+                var data = (new XMLSerializer()).serializeToString(svg);
+                var url = 'data:image/svg+xml;base64,' + window.btoa(data);
+                var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
+                // var svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8'});
+                // var url = URL.createObjectURL(svgBlob);
+                // console.log("svgBlob: ", svgBlob, url);
+                // console.log(svgString);
+                img.crossOrigin='*';
+                img.onload = function(){
+                    console.log("LOADED IMAGE")
+                    ctx.drawImage(img, 0, 0);
+                    // URL.revokeObjectURL(url);
+                    var imgURI = canvas
+                        .toDataURL("image/png")
+                    // console.log("PNG URI: ", imgURI);
+                        // .replace('image/png', 'image/octet-stream');
+
+                    const link = document.createElement('a')
+                    link.href = imgURI;//canvas.toDataURL('image/png');
+                    link.innerHTML = "DOWNLOAD IMAGE";
+                    link.download = 'component.png';
+                    link.style.zIndex = '999';
+                    link.style.backgroundColor = 'white';
+                    // frame.contentDocument.body.appendChild(link)
+                    // document.getElementById('results-wrapper').appendChild(link);
+                    document.getElementById('results-wrapper')
+                        .insertBefore(link, frame);
+
+                    // const targetImg = document.getElementById('component-image2');
+                    // targetImg.src = url;
                 }
-
-                document.querySelector("#component-image").classList.add("showing");
+                img.style.width="500";
+                img.style.height="500";
+                img.src = url;
+                
+                // frame.contentDocument.body.appendChild(img);
             }
 
     </script>
@@ -230,4 +332,33 @@
     v.start();
 
 
+} -->
+
+
+<!-- // Using canvas.
+function html2Png4(inlineStyles) {
+    var frame = document.getElementById("ml-iframe").contentDocument.body;
+    // computedStyleToInlineStyle(frame, {
+    //     recursive: true,
+    //     properties: inlineStyles,
+    //     //['z-index','position','color'],//undefined,
+    // });
+    //https://html2canvas.hertzen.com/configuration
+    html2canvas(frame, {
+        // allowTaint : true,
+        // backgroundColor: null,
+        scale: 1,
+        width: 500,
+        height: 500,
+    }).then((canvas) => {
+        // var link = document.createElement("a");
+        // document.body.appendChild(link);
+        // link.download = "html_image.png";
+        // link.href = canvas.toDataURL("image/png");
+        // link.target = '_blank';
+        // link.click();
+
+        const targetImg = document.getElementById('component-image2');
+        targetImg.src = canvas.toDataURL("image/png");
+    })
 } -->
