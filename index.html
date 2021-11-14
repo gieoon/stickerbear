@@ -4,7 +4,8 @@
     </head>
     <body>
         <h2>Input your prompt</h2>
-        <input id="prompt-input" type="text" placeholder="random prompt here" />
+        <!-- <input id="prompt-input" type="text" placeholder="random prompt here" /> -->
+        <textarea id="prompt-input" type="text" placeholder="random prompt here" resize="vertical"></textarea>
 
         <input id="prompt-img" type="file" onchange="previewFile()" accept="image/png, image/*" />
         <p>Image to use</p>
@@ -88,6 +89,7 @@
                 document.getElementById('results-wrapper').innerHTML = "";
 
                 var prompt = document.getElementById('prompt-input').value; // "Generate something that looks like me"
+
                 fetch(`http://localhost:5000/generate-multiple`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -98,7 +100,9 @@
                             background: 'rgb(255,0,0)',
                             primary: 'rgb(0,255,0)',
                             selected: 'rgb(0,0,255)',
-                        }
+                        },
+                        width: "500px",
+                        height: "500px",
                     })
                 })
                 .then(res => {
@@ -117,9 +121,11 @@
                                 <img id="canvas-img" style="display:block;"></img>
                             </div>
                             `
+                            // To test transparency
+                            frame.contentDocument.body.style.backgroundColor = 'rgb(235,235,235)';
                             injectComponent(frame, result.html);
                             injectStylesheet(frame, result.stylesheet);
-                            html2Png(frame, result.inline_styles);
+                            html2Png(frame, result.stylesheet, result.inline_styles);
                         }
                         // console.log('result', result.stylesheet);
                         // injectComponent(result.html);
@@ -146,6 +152,18 @@
                     newStylesheet.id = 'generatedStylesheet';
                     newStylesheet.innerHTML = styles;
                     frame.contentDocument.head.appendChild(newStylesheet);
+
+                    // Add generic iframe stylesheet
+                    var genericStylesheet = frame.contentDocument.createElement('style');
+                    genericStylesheet.innerHTML = `
+                        div {
+                            background-color: white;
+                        }
+                        p {
+                            max-width: 500px;
+                        }
+                    `
+                    frame.contentDocument.head.appendChild(genericStylesheet);
                 }
             }
 
@@ -165,18 +183,18 @@
 
             // Using SVG
             // https://stackoverflow.com/questions/10721884/render-html-to-an-image
-            function html2Png(frame, inlineStyles) {
-                // console.log('inlinestyles: ', inlineStyles);
+            function html2Png(frame, stylesheet, inlineStyles) {
+                console.log('inlinestyles: ', inlineStyles);
                 // Moves all styling to be inline.
                 // var frame = document.getElementById("ml-iframe").contentDocument.body;
-                computedStyleToInlineStyle(
-                    frame.contentDocument.body
-                    .querySelector('.read-me'),
-                    {
-                        recursive: true,
-                        properties: inlineStyles,
-                        //['z-index','position','color'],//undefined,
-                    });
+                // computedStyleToInlineStyle(
+                //     frame.contentDocument.body
+                //     .querySelector('.read-me'),
+                //     {
+                //         recursive: true,
+                //         properties: inlineStyles,
+                //         //['z-index','position','color'],//undefined,
+                //     });
                 var htmlString = frame//document.getElementById("ml-iframe")
                     .contentDocument.body
                     .querySelector('.read-me')
@@ -191,10 +209,17 @@
                 // canvas.width = 500 * scale;
                 // canvas.height = 500 * scale;
 
+                htmlString = htmlString.replace(/<br[^>]*>/g,'<br/>');
+
                 // const tempImg = frame.contentDocument.getElementById('canvas-img')
                 // tempImg.addEventListener('load', onTempImageLoad)
                 var imgSvg = `${/*encodeURIComponent(*/`
                         <svg xmlns="http://www.w3.org/2000/svg" width="${500 * scale}" height="${500 * scale}">
+                            <defs>
+                                <style type="text/css">
+                                    ${stylesheet}
+                                </style>
+                            </defs>
                             <foreignObject width="100%" height="100%" style="transform:scale(${scale});">
                                 <div xmlns="http://www.w3.org/1999/xhtml">
                                     ${htmlString}
@@ -210,10 +235,11 @@
                     var endIndex = m.index + m[0].length;
                     imgSvg = imgSvg.substring(0, endIndex) + "/" + imgSvg.substring(endIndex);
                 }
+                
 
                 // var svgComponent = document.querySelector('#svg-component');
                 // svgComponent.innerHTML = imgSvg;
-                // console.log(imgSvg);
+                console.log(imgSvg);
                 svg2Png(frame, imgSvg);
 
                 // tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
