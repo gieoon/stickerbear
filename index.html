@@ -7,12 +7,20 @@
         <!-- <input id="prompt-input" type="text" placeholder="random prompt here" /> -->
         <textarea id="prompt-input" type="text" placeholder="random prompt here" resize="vertical"></textarea>
 
-        <input id="prompt-img" type="file" onchange="previewFile()" accept="image/png, image/*" />
+        <input id="prompt-img" type="file" onchange="previewFile()" accept="image/png, image/*, application/pdf" />
         <p>Image to use</p>
         <img src="./sample-background.jpg" height="200" id="prompt-img-preview" />
 
         <div onclick="getComponent()" style="margin:15px;padding: 10px;background-color: yellow;width:fit-content;border:1px solid black;cursor:pointer;">Get component</div>
         <hr/>
+
+        <input type="color" id='main-color' />
+        <label for='main-color'>Main</label>
+        <input type="color" id='secondary-color' />
+        <label for='secondar-color'>Secondary</label>
+        <input type="color" id='accent-color' />
+        <label for='accent-color'>Accent</label>
+
         <!-- <h2>Component to predict:</h2> -->
         <!-- <iframe id="ml-iframe" width="500px" height="500px">
         
@@ -70,6 +78,41 @@
     <script src="./html2canvas.min.js"></script>
     <script type="text/javascript">
 
+            // function hex2Rgb(e) {
+            //     var hex_code = this.value.split("");
+            //     var red = parseInt(hex_code[1]+hex_code[2],16);
+            //     var green = parseInt(hex_code[3]+hex_code[4],16);
+            //     var blue = parseInt(hex_code[5]+hex_code[6],16);
+            //     var rgb = red+","+green+","+blue;
+            // }
+            function hexToRgb(hex) {
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            function toRgbString(r,g,b) {
+                var obj = hexToRgb(r,g,b);
+                return `rgb(${obj.r},${obj.g},${obj.b})`;
+            }
+
+            function componentToHex(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }
+
+            function rgbToHex(r, g, b) {
+               var hex = "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+               return hex;
+            }
+
+            document.getElementById('main-color').value = rgbToHex(255,0,0);
+            document.getElementById('secondary-color').value = rgbToHex(245,245,245);
+            document.getElementById('accent-color').value = rgbToHex(0,0,255);
+
             function previewFile(e) {
                 const preview = document.getElementById('prompt-img-preview');
                 const file = document.getElementById('prompt-img').files[0];
@@ -97,12 +140,12 @@
                         image: document.getElementById('prompt-img-preview').src,
                         prompt: prompt,
                         palette: {
-                            background: 'rgb(255,0,0)',
-                            primary: 'rgb(0,255,0)',
-                            selected: 'rgb(0,0,255)',
+                            main: toRgbString(document.getElementById('main-color').value), //'rgb(255,0,0)',
+                            secondary: toRgbString(document.getElementById('secondary-color').value), //'rgb(0,255,0)',
+                            accent: toRgbString(document.getElementById('accent-color').value), //'rgb(0,0,255)',
                         },
-                        width: "500px",
-                        height: "500px",
+                        width: "500",
+                        height: "500",
                     })
                 })
                 .then(res => {
@@ -127,7 +170,6 @@
                             injectStylesheet(frame, result.stylesheet);
                             html2Png(frame, result.stylesheet, result.inline_styles);
                         }
-                        // console.log('result', result.stylesheet);
                         // injectComponent(result.html);
                         // injectStylesheet(result.stylesheet);
                         // // injectImage(result.png)
@@ -163,7 +205,7 @@
                             max-width: 500px;
                         }
                     `
-                    frame.contentDocument.head.appendChild(genericStylesheet);
+                    // frame.contentDocument.head.appendChild(genericStylesheet);
                 }
             }
 
@@ -176,7 +218,7 @@
             }
 
             // function injectImage(png) {
-            //     console.log('png: ', png);
+            
             //     var image = document.getElementById('component-image2');
             //     image.src = png;
             // }
@@ -184,7 +226,7 @@
             // Using SVG
             // https://stackoverflow.com/questions/10721884/render-html-to-an-image
             function html2Png(frame, stylesheet, inlineStyles) {
-                console.log('inlinestyles: ', inlineStyles);
+                
                 // Moves all styling to be inline.
                 // var frame = document.getElementById("ml-iframe").contentDocument.body;
                 // computedStyleToInlineStyle(
@@ -202,7 +244,7 @@
 
                 // const {body} = document;
                 var scale = 1;
-                // console.log(htmlString)
+                
 
                 // const canvas = document.getElementById('canvas')
                 // const ctx = canvas.getContext('2d')
@@ -239,11 +281,9 @@
 
                 // var svgComponent = document.querySelector('#svg-component');
                 // svgComponent.innerHTML = imgSvg;
-                console.log(imgSvg);
                 svg2Png(frame, imgSvg);
 
                 // tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
-                // console.log('imgSvg: ', imgSvg);
 
                 // const targetImg = document.getElementById('canvas-img')
                 // const targetImg = document.getElementById('component-image2');
@@ -252,12 +292,10 @@
                 // const ctx = canvas.getContext('2d')
 
                 // function onTempImageLoad(e){
-                //     // console.log("image loaded: ", e.target);
                     
                 //     ctx.drawImage(e.target, 0, 0)
                 //     // targetImg.src = canvas.toDataURL(); //"image/png"
                 //     targetImg.src = canvas.toDataURL("image/png");
-                //     console.log("targetImg.src: ", targetImg.src);
                 //     const link = document.createElement('a')
                 //     link.href = canvas.toDataURL();
                 //     link.innerHTML = "DOWNLOAD IMAGE";
@@ -280,16 +318,15 @@
                 var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
                 // var svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8'});
                 // var url = URL.createObjectURL(svgBlob);
-                // console.log("svgBlob: ", svgBlob, url);
-                // console.log(svgString);
+                
                 img.crossOrigin='*';
                 img.onload = function(){
-                    console.log("LOADED IMAGE")
+                    
                     ctx.drawImage(img, 0, 0);
                     // URL.revokeObjectURL(url);
                     var imgURI = canvas
                         .toDataURL("image/png")
-                    // console.log("PNG URI: ", imgURI);
+                    
                         // .replace('image/png', 'image/octet-stream');
 
                     const link = document.createElement('a')
