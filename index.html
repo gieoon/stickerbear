@@ -20,7 +20,7 @@
         <label for='secondar-color'>Secondary</label>
         <input type="color" id='accent-color' />
         <label for='accent-color'>Accent</label>
-
+        <div onclick="downloadAll()">Download all</div>
         <!-- <h2>Component to predict:</h2> -->
         <!-- <iframe id="ml-iframe" width="500px" height="500px">
         
@@ -77,6 +77,17 @@
     <script type="text/javascript" src="https://unpkg.com/canvg@3.0.4/lib/umd.js"></script>
     <script src="./html2canvas.min.js"></script>
     <script type="text/javascript">
+
+            function downloadAll() {
+                var links = Array.from(document.querySelectorAll(".img-link"));
+                var interval = 1000;
+                links.forEach(function(link, index) {
+                    setTimeout(() => {
+                        link.click();
+                        console.log("link clicked: ", index);
+                    }, index * interval);
+                });
+            }
 
             // function hex2Rgb(e) {
             //     var hex_code = this.value.split("");
@@ -152,6 +163,7 @@
                     res.json()
                     .then(results => {
                         var container = document.getElementById('results-wrapper');
+                        var index = 0;
                         for (var result of results) {
                             var frame = document.createElement('iframe');
                             frame.style.width = '500px';
@@ -165,10 +177,12 @@
                             </div>
                             `
                             // To test transparency
-                            frame.contentDocument.body.style.backgroundColor = 'rgb(235,235,235)';
-                            injectComponent(frame, result.html);
+                            frame.contentDocument.body.style.backgroundColor = 'rgb(255,255,255)';
+                            injectComponent(frame, result.html, index);
                             injectStylesheet(frame, result.stylesheet);
-                            html2Png(frame, result.stylesheet, result.inline_styles);
+                            html2Png(frame, result.stylesheet, result.inline_styles, index);
+
+                            index++;
                         }
                         // injectComponent(result.html);
                         // injectStylesheet(result.stylesheet);
@@ -209,9 +223,10 @@
                 }
             }
 
-            function injectComponent(frame, componentString) {
+            function injectComponent(frame, componentString, index) {
                 // var frame = document.getElementById("ml-iframe");
                 frame.contentDocument.body.innerHTML += '<div class="read-me" style="visibility:hidden;">' + componentString + "</div>";
+                frame.contentDocument.body.innerHTML += '<div style="position:absolute;left:0;top:0;"><b>' + (index + 5) + '</b></div>'
                 frame.contentDocument.body.style.margin = "0";
                 var html = frame.contentDocument.querySelector('html');
                 html.style.overflow = 'hidden';
@@ -225,7 +240,7 @@
 
             // Using SVG
             // https://stackoverflow.com/questions/10721884/render-html-to-an-image
-            function html2Png(frame, stylesheet, inlineStyles) {
+            function html2Png(frame, stylesheet, inlineStyles, index) {
                 
                 // Moves all styling to be inline.
                 // var frame = document.getElementById("ml-iframe").contentDocument.body;
@@ -281,7 +296,7 @@
 
                 // var svgComponent = document.querySelector('#svg-component');
                 // svgComponent.innerHTML = imgSvg;
-                svg2Png(frame, imgSvg);
+                svg2Png(frame, imgSvg, index);
 
                 // tempImg.src = "data:image/svg+xml;utf8," + imgSvg;// + encodeURIComponent(imgSvg);
 
@@ -307,7 +322,7 @@
                 // document.querySelector("#component-image").classList.add("showing");
             }
 
-            function svg2Png(frame, svgString) {
+            function svg2Png(frame, svgString, index) {
                 var parser = new DOMParser();
                 var doc = parser.parseFromString(svgString, "image/svg+xml");
                 var svg = doc.documentElement;
@@ -321,7 +336,7 @@
                 
                 img.crossOrigin='*';
                 img.onload = function(){
-                    
+                    console.log("IMG LOADED: ");
                     ctx.drawImage(img, 0, 0);
                     // URL.revokeObjectURL(url);
                     var imgURI = canvas
@@ -332,13 +347,15 @@
                     const link = document.createElement('a')
                     link.href = imgURI;//canvas.toDataURL('image/png');
                     link.innerHTML = "DOWNLOAD IMAGE";
-                    link.download = 'component.png';
+                    link.download = `${index}.png`;
                     link.style.zIndex = '999';
                     link.style.backgroundColor = 'white';
+                    link.classList.add('img-link');
                     // frame.contentDocument.body.appendChild(link)
                     // document.getElementById('results-wrapper').appendChild(link);
                     document.getElementById('results-wrapper')
                         .insertBefore(link, frame);
+
 
                     // const targetImg = document.getElementById('component-image2');
                     // targetImg.src = url;
