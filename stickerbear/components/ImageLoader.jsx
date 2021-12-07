@@ -1,0 +1,26 @@
+// Blinking effect of loading images.
+import styles from '../styles/ImageLoader.module.scss';
+
+export default function ImageLoader({
+    loading,
+}) {
+    return (
+        <div className={styles.ImageLoader + ' ' + (loading ? styles.showing : '')}>
+            <div className={styles.Inner}>
+                {
+                    Array.from(Array(8)).map((n, i) => (
+                        <div key={'image-loader-'+i} 
+                            className={styles.wrapper}>
+                            <div className={styles.cell}>
+                                <div className={styles.image + ' ' + styles.animated_background} />
+                                
+                                <div className={styles.text_line + ' ' + styles.animated_background} />
+                                
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    )
+}
