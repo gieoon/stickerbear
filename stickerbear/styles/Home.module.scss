@@ -46,6 +46,11 @@ $size: 300px;
     font-weight: 700;
     position: relative;
 
+    &.disabled {
+      pointer-events: none;
+      opacity: .5;
+    }
+
     // svg {
     //   visibility: hidden;
     // }
@@ -120,30 +125,6 @@ $size: 300px;
 }
 
 
-.instructions {
-  background-color: white;
-  width: 100%;
-  text-align: center;
-  padding: 3rem 0;
-  z-index: 1;
-  
-  div {
-    font-size: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    // font-weight: 600;
-    // opacity: .5;
-    margin: 2rem;
-
-    .number {
-      color: $primary-color;
-      font-size: 55px;
-      font-weight: 800;
-      margin-right: 15px;
-    }
-  }
-}
 
 #palette_description, 
 .image_description {
@@ -207,22 +188,26 @@ $size: 300px;
 }
 
 .main {
-  // min-height: 100vh;
+  min-height: 100vh;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; //center;
   align-items: center;
   background-color: rgb(240,240,240);
+  flex-grow: 1;
 }
 
 .footer {
   display: flex;
-  flex: 1;
+  flex: 0;
   padding: 2rem 0;
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
+  background-color: #f0f0f0;//rgb(250,250,250);
+  height: 100px;
+  // color: white;
 }
 
 .footer a {
@@ -312,7 +297,7 @@ $size: 300px;
       grid-template-columns: repeat( auto-fit, minmax($size, 350px) );
       
       padding-bottom: 8rem!important; // Transform messes up spacing, so need to add more.
-      margin-top: -8rem;
+      margin-top: -2rem;
     }
 
     > .viewing_grid {

@@ -1,7 +1,8 @@
 $primary-color: #0070f3;
 
 .GeneratedImage {
-    width: 500px;
+    width: 100%;
+    height: 100%;
     margin: 30px auto;
     position: relative;
 
@@ -16,18 +17,31 @@ $primary-color: #0070f3;
         display: flex;
         align-items: flex-end;
         width: fit-content;
-
+        
+        .iframe_wrapper {
+            
+        }
+        
         .download_wrapper {
             margin-left: 25px;
         }
+        
     }
 
     &.grid {
-        transform: scale(0.65);
-
+        .iframe_wrapper {
+            transform: scale(0.65);// translateX(-16.5%) translateY(-16.5%);
+            transform-origin: 0 0;
+            width: 500px;
+            height: 500px;
+        }
         .download_wrapper {
-            margin: 10px 0 35px;
+            position: absolute;
+            bottom: 0;
+            margin: 0px 0 15px;
+            right: 0;
             // transform: scale(1.5);
+            // transform-origin: right; // top right;
         }
     }
 }

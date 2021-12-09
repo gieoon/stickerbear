@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import styles from '../styles/PaletteDisplay.module.scss';
-import {shuffle} from '../helpers.js';
+import {shuffle, swapIndexes} from '../helpers.js';
 import { PaletteContext } from "../context";
 
 export default function PaletteDisplay({}) {
@@ -17,10 +17,15 @@ export default function PaletteDisplay({}) {
     useEffect(() => {
         // Split palette into groups of 3's.
         var split = [];
-        palette.forEach(p => {
+        palette.slice(0, 5).forEach(p => {
+            // Shuffle values around for more contrast.
+            
+            p = swapIndexes(p, 1, 3);
+            
+
             split.push(p.slice(0,3));
-            split.push(p.slice(1,4))
-            split.push(p.slice(2,5))
+            split.push(p.slice(1,4));
+            split.push(p.slice(2,5));
         });
         split = shuffle(split);
 

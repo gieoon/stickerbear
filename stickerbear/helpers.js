@@ -39,3 +39,8 @@ function rgbToHex(r, g, b) {
    var hex = "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
    return hex;
 }
+
+export function swapIndexes(array, i1, i2) {
+    [array[i1], array[i2]] = [array[i2], array[i1]];
+    return array;
+}

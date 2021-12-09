@@ -2,7 +2,7 @@ import { API_SERVER } from './constants.js';
 import {toRgbString} from './helpers.js';
 
 export async function getComponent(image, prompt, c1, c2, c3) {
-
+console.log(toRgbString(c2));
     return await fetch(API_SERVER, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

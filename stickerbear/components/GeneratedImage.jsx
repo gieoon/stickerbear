@@ -2,23 +2,22 @@ import styles from '../styles/GeneratedImage.module.scss';
 import Frame from 'react-frame-component';
 import { APP_TITLE } from '../constants';
 import { useEffect, useState, useRef } from 'react';
+import { useFrame } from 'react-frame-component';
 
 export default function GeneratedImage({
-    data, isViewingFull
+    data, isViewingFull, setLoading,
 }) {
+    var isImgLoading = false;
+
     const [downloadUrl, setDownloadUrl] = useState();
+    const [imgSrc, setImgSrc] = useState();
 
     const iframeRef = useRef();
-    const readMeRef = useRef();
-
-    useEffect(() => {
-        if (readMeRef.current)
-            html2Png();
-    }, [readMeRef.current, data]);
 
     const html2Png = () => {
+        
         var scale = 1;
-        console.log("iframeRef.current.contentDocument.body: ", iframeRef.current.contentDocument.body);
+        
         var htmlString = iframeRef.current
                     .contentDocument.body
                     .querySelector('.read-me')
@@ -56,53 +55,54 @@ export default function GeneratedImage({
         var parser = new DOMParser();
         var doc = parser.parseFromString(svgString, "image/svg+xml");
         var svg = doc.documentElement;
-        const canvas = frame.contentDocument.getElementById('canvas')
-        const ctx = canvas.getContext('2d')
+        // const canvas = frame.contentDocument.getElementById('canvas')
+        // const ctx = canvas.getContext('2d')
         var data = (new XMLSerializer()).serializeToString(svg);
         var url = 'data:image/svg+xml;base64,' + window.btoa(data);
-        var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
+        // var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
         
-        img.crossOrigin='*';
-        img.onload = function(){
-            console.log('IMAGE LOADED');
-            ctx.drawImage(img, 0, 0);
-            var imgURI = canvas
-                .toDataURL("image/png")
-            setDownloadUrl(imgURI);
-        }
-        img.style.width="500";
-        img.style.height="500";
-        img.src = url;
-    }
-// console.log(data)
-    return (
-        <div className={styles.GeneratedImage + ' ' + (isViewingFull ? styles.full_size : styles.grid)}
-            //style={{transform: 'scale(0.75)'}}
-        >
-            <Frame
-                ref={iframeRef}
-                style={
-                    {
-                        border: 'none',
-                        width: '500px',
-                        height: '500px',
-                        boxShadow: '0 0 4px rgba(0,0,0,.15)',
-                        // transform: isViewingFull ? 'scale(1)' : 'scale(0.5)',
-                    }}
-                head={
-                    <>
-                        <style id='generatedStylesheet'>{data.stylesheet}</style>
-                        <style>{
-                            `html {
-                                overflow:hidden;
-                            } 
-                            body { margin:0;} 
-                            mark {color: inherit;}`
-                        }</style>
-                    </>
-                }
+        // img.crossOrigin='*';
+        // img.onload = function(){
+        //     console.log('IMAGE LOADED');
+        //     ctx.drawImage(img, 0, 0);
+        //     var imgURI = canvas
+        //         .toDataURL("image/png")
+        //     setDownloadUrl(imgURI);
+            
+        //     global.imageLoadedCount += 1;
 
-            >
+        //     // console.log(global.imageLoadedCount, global.totalImagesToLoad);
+
+        //     if (global.imageLoadedCount === global.totalImagesToLoad) {
+        //         setLoading(false);
+        //     }
+        // }
+        // img.style.width="500";
+        // img.style.height="500";
+        // img.src = 
+        setImgSrc(url);
+    }
+
+    const InnerComponent = () => {
+        const {document, window} = useFrame();
+
+        const imgRef = useRef();
+        useEffect(() => {
+            // if (imgRef.current)
+            //     console.log('imgRef.current.length: ', imgRef.current.src.length);
+            // console.log(imgSrc);
+            if (imgRef.current 
+                && imgRef.current.src.length === 0
+                && imgSrc === undefined) {
+                    // console.log('html2png');
+                    ++global.imageLoadedCount;
+                html2Png();
+            }
+
+        }, [imgSrc]);
+
+        return (
+            <>
                 <div id="component-image" style={{
                     // border: '4px solid #0070f3',
                 }}>
@@ -112,19 +112,82 @@ export default function GeneratedImage({
                         pointerEvents:'none', 
                         visibility:'hidden'
                     }} />
-                    <img id="canvas-img" 
+                    <img id="canvas-img"
+                        crossOrigin='*' 
+                        width={500}
+                        height={500}
+                        src={imgSrc}
+                        onLoad={(e) => {
+                            // console.log(e.target.src.length);
+                            var img = e.target;
+                            const frame = iframeRef.current;
+                            const canvas = frame.contentDocument.getElementById('canvas');
+                            const ctx = canvas.getContext('2d');
+                            // console.log('IMAGE LOADED');
+                            ctx.drawImage(img, 0, 0);
+                            var imgURI = canvas
+                                .toDataURL("image/png")
+                            setDownloadUrl(imgURI);
+                            
+                            // if(imgSrc.current.src.length > 0){
+                            //     global.imageLoadedCount += 1;
+                            // }
+                
+                            // console.log(global.imageLoadedCount, global.totalImagesToLoad);
+                
+                            if (global.imageLoadedCount === global.totalImagesToLoad) {
+                                setLoading(false);
+                            }
+                        }}
+                    ref={imgRef}
                     style={{
                         // display:'none'
                         
                     }} />
                 </div>
-                
-                <div ref={readMeRef} 
+                    
+                <div //ref={readMeRef} 
                     className='read-me'
                     style={{visibility:'hidden'}}
                     dangerouslySetInnerHTML={{__html: data.html}}
                 />
-            </Frame>
+            </>
+        )
+    }
+
+    return (
+        <div className={styles.GeneratedImage + ' ' + (isViewingFull ? styles.full_size : styles.grid)}
+            //style={{transform: 'scale(0.75)'}}
+        >
+            <div className={styles.iframe_wrapper}>
+                <Frame
+                    ref={iframeRef}
+                    style={
+                        {
+                            border: 'none',
+                            width: '500px',
+                            height: '500px',
+                            boxShadow: '0 0 4px rgba(0,0,0,.15)',
+                            // transform: isViewingFull ? 'scale(1)' : 'scale(0.5)',
+                        }}
+                    head={
+                        <>
+                            <style id='generatedStylesheet'>{data.stylesheet}</style>
+                            <style>{
+                                `html {
+                                    overflow:hidden;
+                                } 
+                                * { word-break: break-all; }
+                                body { margin:0;} 
+                                mark {color: inherit;}`
+                            }</style>
+                        </>
+                    }
+
+                >
+                    <InnerComponent />
+                </Frame>
+            </div>
             <div className={styles.download_wrapper}>
                 <a download={APP_TITLE.replace(/[ ]/g,'_').toLowerCase()}
                     href={downloadUrl}

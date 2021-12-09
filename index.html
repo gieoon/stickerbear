@@ -3,14 +3,15 @@
         <style id="generatedStylesheet"></style>
     </head>
     <body>
-        <h2>Website text</h2>
+        <h2 style="margin:0;">Sticky Owl</h2>
+        <h4 style="margin:0;">Make your social media more engaging with eye-catching posts.</h4>
         <!-- <input id="prompt-input" type="text" placeholder="random prompt here" /> -->
         <textarea id="prompt-input" type="text" placeholder="random prompt here" resize="vertical"></textarea>
 
         <input id="prompt-img" type="file" onchange="previewFile()" accept="image/png, image/*, application/pdf" />
         <p>Image to use</p>
-        <img src="./sample-background.jpg" height="200" id="prompt-img-preview" />
-
+        <img src="" height="200" id="prompt-img-preview" />
+        <!-- ./sample-background.jpg -->
         <div onclick="getComponent()" style="margin:15px;padding: 10px;background-color: yellow;width:fit-content;border:1px solid black;cursor:pointer;">Get component</div>
         <hr/>
 
@@ -85,6 +86,12 @@
     <script type="text/javascript" src="https://unpkg.com/canvg@3.0.4/lib/umd.js"></script>
     <script src="./html2canvas.min.js"></script>
     <script type="text/javascript">
+
+            document.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    getComponent();
+                }
+            });
 
             function downloadAll() {
                 var links = Array.from(document.querySelectorAll(".img-link"));
@@ -181,7 +188,7 @@
                             frame.contentDocument.body.innerHTML = `
                             <div id="component-image">
                                 <canvas id="canvas" width="500px" height="500px" style="transform: scale(1); position:absolute; pointer-events:none; visibility:hidden;"></canvas>
-                                <img id="canvas-img" style="display:block;"></img>
+                                <img id="canvas-img" style="display:none;"></img>
                             </div>
                             `
                             // To test transparency
@@ -219,21 +226,25 @@
 
                     // Add generic iframe stylesheet
                     var genericStylesheet = frame.contentDocument.createElement('style');
+                    // div {
+                    //         background-color: white;
+                    //     }
+                    //     p {
+                    //         max-width: 500px;
+                    //     }
                     genericStylesheet.innerHTML = `
-                        div {
-                            background-color: white;
-                        }
-                        p {
-                            max-width: 500px;
+                        mark {
+                            color: inherit;
                         }
                     `
-                    // frame.contentDocument.head.appendChild(genericStylesheet);
+                    frame.contentDocument.head.appendChild(genericStylesheet);
                 }
             }
 
             function injectComponent(frame, componentString, index) {
                 // var frame = document.getElementById("ml-iframe");
-                frame.contentDocument.body.innerHTML += '<div class="read-me" style="visibility:hidden;">' + componentString + "</div>";
+                frame.contentDocument.body.innerHTML += '<div class="read-me" style="visibility:visible;">' + componentString + "</div>";
+                // index for debugging.
                 frame.contentDocument.body.innerHTML += '<div style="position:absolute;left:0;top:0;"><b>' + (index + 5) + '</b></div>'
                 frame.contentDocument.body.style.margin = "0";
                 var html = frame.contentDocument.querySelector('html');

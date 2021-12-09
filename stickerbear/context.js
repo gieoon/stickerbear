@@ -7,10 +7,6 @@ export const PaletteContextProvider = (props) => {
     const [c2, setC2] = useState('');
     const [c3, setC3] = useState('');
 
-    useEffect(() => {
-        console.log('c1: ', c1);
-    }, [c1])
-
     return <PaletteContext.Provider value={{
         c1: c1, 
         setC1: setC1,
