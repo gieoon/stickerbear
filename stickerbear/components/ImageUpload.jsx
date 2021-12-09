@@ -59,43 +59,62 @@ export default function ImageUpload({
         }, false);
     }
 
-    
     return (
         <div className={styles.ImageUpload}>
-            { image.length 
-                ? <img id="preview-img" style={{margin:'auto',display:'block'}}  height="200" />
-                : <></>
-            }
+            
             <div className={styles.file_container}>
-                <div className={styles.file_wrapper}>
-                {/* <div className={styles.file_overlay}> */}
-                    <input ref={inputRef} 
-                        className={styles.file_input}
-                        type="file"
-                        accept="image/*"
-                        onDragEnter={(e) => {
-                            if (isDragSupported)
-                                e.target.classList.add('file-input--active');
-                        }}
-                        onDragLeave={(e) => {
-                            e.target.classList.remove('file-input--active');
-                        }}
-                        onChange={onFileAdded}/>
-                    <div className={styles.file_content}>
-                        <div className={styles.file_infos}>
-                            {/* <p className={styles.file_icon}> */}
-                                <ImageSVG size={65} color='rgb(150,150,150)' />
-                                <span className={styles.icon_shadow}></span>
-                                <div className={styles.file_btn}>Add an image</div>
-                            {/* </p> */}
+                
+                <div className={styles.preview_wrapper}>
+                    <img id="preview-img" 
+                        style={{
+                            margin:'auto',
+                            display: image.name ? 'block' : 'none',
+                        }}  height="200" />
+
+                    {image.name
+                        ? <X className={styles.X} 
+                            onClick={() => {
+                            setImage("");
+                            removeImage();
+                        }} />
+                        : <></>
+                    }
+                </div>
+
+                { !image.name
+                    ? <div className={styles.file_wrapper}>
+
+                    {/* <div className={styles.file_overlay}> */}
+                        <input ref={inputRef} 
+                            className={styles.file_input}
+                            type="file"
+                            accept="image/*"
+                            onDragEnter={(e) => {
+                                if (isDragSupported)
+                                    e.target.classList.add('file-input--active');
+                            }}
+                            onDragLeave={(e) => {
+                                e.target.classList.remove('file-input--active');
+                            }}
+                            onChange={onFileAdded}/>
+                        <div className={styles.file_content}>
+                            <div className={styles.file_infos}>
+                                {/* <p className={styles.file_icon}> */}
+                                {/* color='rgb(150,150,150)' */}
+                                    <ImageSVG size={25} color='white' />
+                                    <span className={styles.icon_shadow}></span>
+                                    <div className={styles.file_btn}>
+                                        Add an image
+                                        <span className={styles.optional}>(Optional)</span>
+                                    </div>
+                                {/* </p> */}
+                            </div>
                         </div>
                     </div>
-                </div>
+                    : <></>
+                }
                 {/* </div> */}
             </div>
-            <X className={styles.X} onClick={() => {
-                setImage("");
-            }} />
         </div>
         
     )

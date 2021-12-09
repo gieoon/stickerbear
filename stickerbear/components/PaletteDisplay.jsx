@@ -33,7 +33,8 @@ export default function PaletteDisplay({}) {
     }, [palette]);
 
     const ColorContainer = ({hex}) => {
-        return <div style={{
+        return <div 
+            style={{
             width: '50px',
             height: '50px',
             backgroundColor: hex
@@ -41,7 +42,7 @@ export default function PaletteDisplay({}) {
     }
 
     const paletteWrapper = (hexArray, i) => {
-        return <div key={`hexarray-${i}`} 
+        return <div //key={`hexarray-${i}`} 
             className={styles.PaletteWrapper + ' ' + (i === currentPalette ? styles.selected : '')}
             onClick={() => {
                 setC1(hexArray[0]);
@@ -49,7 +50,11 @@ export default function PaletteDisplay({}) {
                 setC3(hexArray[2]);
                 setCurrentPalette(i);
             }}>
-            {hexArray.map(hex => <ColorContainer hex={hex}/>)}
+            {hexArray.map(hex => 
+                <div key={`hex-${hex}-${i}`}>
+                    <ColorContainer hex={hex}/>
+                </div>
+            )}
         </div>
     }
 

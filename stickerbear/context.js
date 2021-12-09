@@ -1,11 +1,15 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const PaletteContext = createContext();
 
 export const PaletteContextProvider = (props) => {
-    const [c1, setC1] = useState();
-    const [c2, setC2] = useState();
-    const [c3, setC3] = useState();
+    const [c1, setC1] = useState('');
+    const [c2, setC2] = useState('');
+    const [c3, setC3] = useState('');
+
+    useEffect(() => {
+        console.log('c1: ', c1);
+    }, [c1])
 
     return <PaletteContext.Provider value={{
         c1: c1, 

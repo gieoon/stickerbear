@@ -1,18 +1,18 @@
 import { API_SERVER } from './constants.js';
 import {toRgbString} from './helpers.js';
 
-async function getComponent() {
+export async function getComponent(image, prompt, c1, c2, c3) {
 
     return await fetch(API_SERVER, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            image: document.getElementById('prompt-img-preview').src,
+            image: image,//document.getElementById('prompt-img-preview').src,
             prompt: prompt,
             palette: {
-                main: toRgbString(document.getElementById('main-color').value), //'rgb(255,0,0)',
-                secondary: toRgbString(document.getElementById('secondary-color').value), //'rgb(0,255,0)',
-                accent: toRgbString(document.getElementById('accent-color').value), //'rgb(0,0,255)',
+                main: toRgbString(c1), //'rgb(255,0,0)',
+                secondary: toRgbString(c2), //'rgb(0,255,0)',
+                accent: toRgbString(c3), //'rgb(0,0,255)',
             },
             width: "500",
             height: "500",

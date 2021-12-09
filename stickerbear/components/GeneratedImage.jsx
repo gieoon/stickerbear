@@ -1,31 +1,137 @@
 import styles from '../styles/GeneratedImage.module.scss';
 import Frame from 'react-frame-component';
+import { APP_TITLE } from '../constants';
+import { useEffect, useState, useRef } from 'react';
 
 export default function GeneratedImage({
-    data
+    data, isViewingFull
 }) {
-    var styles = {
-        border: 'none',
-        width: '500px',
-        height: '500px',
-    };
+    const [downloadUrl, setDownloadUrl] = useState();
 
+    const iframeRef = useRef();
+    const readMeRef = useRef();
+
+    useEffect(() => {
+        if (readMeRef.current)
+            html2Png();
+    }, [readMeRef.current, data]);
+
+    const html2Png = () => {
+        var scale = 1;
+        console.log("iframeRef.current.contentDocument.body: ", iframeRef.current.contentDocument.body);
+        var htmlString = iframeRef.current
+                    .contentDocument.body
+                    .querySelector('.read-me')
+                    .innerHTML;
+        
+        htmlString = htmlString.replace(/<br[^>]*>/g,'<br/>');
+
+        var imgSvg = `${`
+        <svg xmlns="http://www.w3.org/2000/svg" width="${500 * scale}" height="${500 * scale}">
+            <defs>
+                <style type="text/css">
+                    ${data.stylesheet}
+                </style>
+            </defs>
+            <foreignObject width="100%" height="100%" style="transform:scale(${scale});">
+                <div xmlns="http://www.w3.org/1999/xhtml">
+                    ${htmlString}
+                </div>
+            </foreignObject>
+        </svg>
+        `}`
+
+        imgSvg.replace(/%0A\s+/g,'');
+        //Replace image using regex.
+        var m = imgSvg.match(/<img[^>]+/);
+        if (m) {
+            var endIndex = m.index + m[0].length;
+            imgSvg = imgSvg.substring(0, endIndex) + "/" + imgSvg.substring(endIndex);
+        }
+
+        svg2Png(iframeRef.current, imgSvg);
+    }
+
+    function svg2Png(frame, svgString) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(svgString, "image/svg+xml");
+        var svg = doc.documentElement;
+        const canvas = frame.contentDocument.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+        var data = (new XMLSerializer()).serializeToString(svg);
+        var url = 'data:image/svg+xml;base64,' + window.btoa(data);
+        var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
+        
+        img.crossOrigin='*';
+        img.onload = function(){
+            console.log('IMAGE LOADED');
+            ctx.drawImage(img, 0, 0);
+            var imgURI = canvas
+                .toDataURL("image/png")
+            setDownloadUrl(imgURI);
+        }
+        img.style.width="500";
+        img.style.height="500";
+        img.src = url;
+    }
+// console.log(data)
     return (
-        <Frame
-            styles={styles}
-
-            head={
-                <style>{data.stylesheet}</style>
-            }
-
+        <div className={styles.GeneratedImage + ' ' + (isViewingFull ? styles.full_size : styles.grid)}
+            //style={{transform: 'scale(0.75)'}}
         >
-            <div id="component-image">
-                <canvas id="canvas" width="500px" height="500px" style="transform: scale(1); position:absolute; pointer-events:none; visibility:hidden;"></canvas>
-                <img id="canvas-img" style="display:none;"></img>
+            <Frame
+                ref={iframeRef}
+                style={
+                    {
+                        border: 'none',
+                        width: '500px',
+                        height: '500px',
+                        boxShadow: '0 0 4px rgba(0,0,0,.15)',
+                        // transform: isViewingFull ? 'scale(1)' : 'scale(0.5)',
+                    }}
+                head={
+                    <>
+                        <style id='generatedStylesheet'>{data.stylesheet}</style>
+                        <style>{
+                            `html {
+                                overflow:hidden;
+                            } 
+                            body { margin:0;} 
+                            mark {color: inherit;}`
+                        }</style>
+                    </>
+                }
+
+            >
+                <div id="component-image" style={{
+                    // border: '4px solid #0070f3',
+                }}>
+                    <canvas id="canvas" width={500} height={500} style={{
+                        transform: 'scale(2)', 
+                        position:'absolute', 
+                        pointerEvents:'none', 
+                        visibility:'hidden'
+                    }} />
+                    <img id="canvas-img" 
+                    style={{
+                        // display:'none'
+                        
+                    }} />
+                </div>
+                
+                <div ref={readMeRef} 
+                    className='read-me'
+                    style={{visibility:'hidden'}}
+                    dangerouslySetInnerHTML={{__html: data.html}}
+                />
+            </Frame>
+            <div className={styles.download_wrapper}>
+                <a download={APP_TITLE.replace(/[ ]/g,'_').toLowerCase()}
+                    href={downloadUrl}
+                    className={styles.download}>
+                    Save
+                </a>
             </div>
-            <div className={styles.GeneratedImage}
-                dangerouslySetInnerHTML={{__html: data.html}}
-            />
-        </Frame>
+        </div>
     )
 }

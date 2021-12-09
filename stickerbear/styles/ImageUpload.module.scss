@@ -1,6 +1,6 @@
 $--overlay-color: rgba(0, 0, 0, .7);
 $--dialog-color: white;//#e9ecef;
-$--dialog-border-radius: 6px;
+$--dialog-border-radius: 0;//6px;
 $--icon-color: rgba(73, 80, 87, .6);
 $--dialog-padding: 10px;
 $--drag-over-background: #e3e5e8;
@@ -10,12 +10,15 @@ $primary-color: #0070f3;
 
 .ImageUpload {
     max-width: 550px;
-    width: 175px;//100%;
-    height: 125px;
+    width: calc(65px * 3);//175px;//100%;
+    height: 100px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 3rem;
-    margin-right: 1rem;
+    background-color: white;
+    // margin-bottom: 3rem;
+    // margin-right: 1rem;
+
+    
 }
 
 .file_container {
@@ -23,6 +26,7 @@ $primary-color: #0070f3;
     font-family: sans-serif;
     font-size: 13pt;
     color: #4d4d4d;
+    // position: relative;
     
     // .file_overlay {
     //    position: absolute;
@@ -35,6 +39,39 @@ $primary-color: #0070f3;
     //    z-index: 10;
     //    background-color: $--overlay-color;
     // }
+
+    .preview_wrapper {
+        position: absolute;
+        margin: 10px;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(245,245,245);
+
+        img {
+            position: absolute;
+            z-index: 20;
+            height: 80px;
+            margin: auto;
+            object-fit: contain;
+        }
+
+        .X {
+            position: absolute;
+            z-index: 21;
+            right: 5px;
+            top: 5px;
+            background-color: white;
+            color: $primary-color;
+            
+            cursor: pointer;
+
+            &:hover {
+                opacity: .5;
+            }
+        }
+    }
     
     .file_wrapper {
        position: absolute;
@@ -51,6 +88,10 @@ $primary-color: #0070f3;
        z-index: 20;
        border-radius: $--dialog-border-radius;
        padding: $--dialog-padding;
+
+        &:hover {
+            opacity: .75;
+        }
  
        .file_input {
           position: absolute;
@@ -92,14 +133,16 @@ $primary-color: #0070f3;
           display: block;
           width: 100%;
           height: 100%;
-          border: 4px dashed $--icon-color; 
+        //   border: 2px dashed $--icon-color; 
           border-radius: $--dialog-border-radius;
           transition: .2s;
- 
+          background-color: $primary-color;
+
           .file_infos {
              position: absolute;
              display: flex;
-             width: 50%;
+            //  width: 50%;
+            
              height: 50%;
             //  min-width: 400px;
              min-height: 202px;
@@ -108,7 +151,7 @@ $primary-color: #0070f3;
              bottom: 0;
              left: 0;
              margin: auto;
-             flex-direction: column;
+            //  flex-direction: column;
              justify-content: center;
              align-items: center;
  
@@ -125,7 +168,7 @@ $primary-color: #0070f3;
             //     transition: .2s;
  
                 svg {
-                    display: block;
+                    display: none;
                     // margin: auto;
                     // margin-bottom: 15px;
                 //    width: 100%;
@@ -145,13 +188,21 @@ $primary-color: #0070f3;
                 }
 
                 .file_btn {
-                    background-color: white;//$primary-color;
+                    // background-color: white;//$primary-color;
                     // color: white;
-                    color: rgba(0,0,0,.5);
-                    border-radius: 10px;
-                    font-size: 15px;
+                    color: white;//rgba(0,0,0,.5);
+                    // border-radius: 10px;
+                    font-size: 18px;
+                    font-weight: 600;
                     white-space: nowrap;
                     padding: 5px 10px;
+                    position: relative;
+
+                    .optional {
+                        font-size: 12px;
+                        text-align: center;
+                        display: block;
+                    }
                 }
                 
                 & > span {
@@ -168,16 +219,17 @@ $primary-color: #0070f3;
                    }
                 }
                 
-                p {
-                   display: block;
-                   text-align: center;
-                   font-size: 18px;
-                   opacity: .5;
-                   color: black;
-                   margin: 0 auto;
+                // p {
+                //    display: block;
+                //    text-align: center;
+                //    font-size: 18px;
+                //    opacity: .5;
+                //    color: black;
+                //    margin: 0 auto;
                 //    text-transform: uppercase;
                 //    font-weight: bold;
-                }
+                
+                // }
             //  }
           }
  
