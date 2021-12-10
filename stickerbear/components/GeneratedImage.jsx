@@ -7,7 +7,7 @@ import { useFrame } from 'react-frame-component';
 export default function GeneratedImage({
     data, isViewingFull, setLoading,
 }) {
-    var isImgLoading = false;
+    console.log(data)
 
     const [downloadUrl, setDownloadUrl] = useState();
     const [imgSrc, setImgSrc] = useState();
@@ -55,31 +55,8 @@ export default function GeneratedImage({
         var parser = new DOMParser();
         var doc = parser.parseFromString(svgString, "image/svg+xml");
         var svg = doc.documentElement;
-        // const canvas = frame.contentDocument.getElementById('canvas')
-        // const ctx = canvas.getContext('2d')
         var data = (new XMLSerializer()).serializeToString(svg);
         var url = 'data:image/svg+xml;base64,' + window.btoa(data);
-        // var img = frame.contentDocument.querySelector('#canvas-img'); //new Image();
-        
-        // img.crossOrigin='*';
-        // img.onload = function(){
-        //     console.log('IMAGE LOADED');
-        //     ctx.drawImage(img, 0, 0);
-        //     var imgURI = canvas
-        //         .toDataURL("image/png")
-        //     setDownloadUrl(imgURI);
-            
-        //     global.imageLoadedCount += 1;
-
-        //     // console.log(global.imageLoadedCount, global.totalImagesToLoad);
-
-        //     if (global.imageLoadedCount === global.totalImagesToLoad) {
-        //         setLoading(false);
-        //     }
-        // }
-        // img.style.width="500";
-        // img.style.height="500";
-        // img.src = 
         setImgSrc(url);
     }
 
@@ -95,7 +72,7 @@ export default function GeneratedImage({
                 && imgRef.current.src.length === 0
                 && imgSrc === undefined) {
                     // console.log('html2png');
-                    ++global.imageLoadedCount;
+                    // ++global.imageLoadedCount;
                 html2Png();
             }
 
@@ -118,23 +95,15 @@ export default function GeneratedImage({
                         height={500}
                         src={imgSrc}
                         onLoad={(e) => {
-                            // console.log(e.target.src.length);
                             var img = e.target;
                             const frame = iframeRef.current;
                             const canvas = frame.contentDocument.getElementById('canvas');
                             const ctx = canvas.getContext('2d');
-                            // console.log('IMAGE LOADED');
                             ctx.drawImage(img, 0, 0);
                             var imgURI = canvas
                                 .toDataURL("image/png")
                             setDownloadUrl(imgURI);
                             
-                            // if(imgSrc.current.src.length > 0){
-                            //     global.imageLoadedCount += 1;
-                            // }
-                
-                            // console.log(global.imageLoadedCount, global.totalImagesToLoad);
-                
                             if (global.imageLoadedCount === global.totalImagesToLoad) {
                                 setLoading(false);
                             }
@@ -148,7 +117,9 @@ export default function GeneratedImage({
                     
                 <div //ref={readMeRef} 
                     className='read-me'
-                    style={{visibility:'hidden'}}
+                    style={{
+                        // visibility:'hidden'
+                    }}
                     dangerouslySetInnerHTML={{__html: data.html}}
                 />
             </>

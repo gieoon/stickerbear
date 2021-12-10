@@ -13,6 +13,7 @@ import ImageLoader from '../components/ImageLoader';
 import HeaderPalette from '../components/HeaderPalette';
 import { ArrowRight, X, Grid, Square } from 'react-feather';
 import Instructions from '../components/Instructions';
+import InfiniteLoader_ from '../components/InfiniteLoader_';
 
 
 export default function Home() {
@@ -62,10 +63,18 @@ export default function Home() {
                     <textarea 
                       id="main-textarea"
                       autoFocus={true}
-                      value={prompt} 
+                      // value={prompt} 
                       onChange={(e) => {
-                      setPrompt(e.target.value);
-                    }} placeholder="My message here" />
+                        // Only modify blank to displaying change.
+                        // Otherwise constant state change is too laggy.
+                        if (e.target.value.length > 0 && prompt.length === 0) {
+                          setPrompt(e.target.value);
+                        }
+                        else if (e.target.value.length === 0 && prompt.length > 0) {
+                          setPrompt(e.target.value);
+                        }
+                      }} 
+                      placeholder="My message here" />
                     {/* <div className={styles.search_btn} onClick={() => go()}>
                       Create
                     </div> */}
@@ -74,7 +83,7 @@ export default function Home() {
 
                 <div>
                   <CreateButton 
-                    prompt={prompt} 
+                    // prompt={prompt} 
                     setGeneratedData={setGeneratedData} 
                     setLoading={setLoading}
                     setShowingPalette={setShowingPalette} />
@@ -101,7 +110,6 @@ export default function Home() {
           }
 
           <div className={styles.middle_section}>
-          
 
             <div className={styles.palette_wrapper + ' ' + (isShowingPalette ? styles.showing : '')}>
               <p id={styles.palette_description}>Choose from a selection of colors, or select your own.</p>
@@ -142,7 +150,7 @@ export default function Home() {
               }
             </div>
           {/* + ' ' + (isShowingPalette ? '' : styles.showing) */}
-            <div className={styles.grid + ' ' + (isViewingFull ? '' : styles.viewing_grid)}>
+            {/* <div className={styles.grid + ' ' + (isViewingFull ? '' : styles.viewing_grid)}>
               { generatedData.map((data, i) => (
                   <div key={`generated-${i}`}
                     className={isViewingFull ? '' : styles.viewing_grid}
@@ -154,7 +162,15 @@ export default function Home() {
                   </div>
                 ))
               }
-            </div>
+            </div> */}
+
+            <InfiniteLoader_
+              isViewingFull={isViewingFull}
+              hasNextPage={false}
+              isNextPageLoading={false}
+              data={generatedData}
+              loadNextPage={() => {}}
+            />
 
             {/* <div className={styles.loader_showing + " " + (loading ? styles.showing : '')}>
               <div className={'loader'}></div>
@@ -164,7 +180,7 @@ export default function Home() {
         }
       
 
-      { prompt.length === 0 || generatedData.length > 0 || true
+      { generatedData.length === 0
         ? <footer className={styles.footer}>
           {APP_TITLE} by {' '}
           <span className={styles.logo}>
@@ -230,24 +246,27 @@ export const CreateButton = ({
     var imgSrc = '';
     if (image !== '')
       imgSrc = document.getElementById("preview-img").src;
+    
+    var promptValue = document.getElementById('main-textarea').value;
 
-    console.log(c1, c2, c3, prompt, imgSrc.substring(0, 100));
+    console.log(c1, c2, c3, promptValue, imgSrc.substring(0, 100));
 
-    setLoading(true);
+    // TODO add this back in.
+    // setLoading(true);
     setShowingPalette(false);
 
     setPrevState({
       c1: c1,
       c2: c2,
       c3: c3,
-      prompt: prompt,
+      prompt: promptValue, //prompt,
       image: image,
     });
     
     // Need to create staggered loading.
     // Based on pagination, becasue a stream requires websockets.
     getComponent(
-      imgSrc, prompt, c1, c2, c3
+      imgSrc, promptValue, c1, c2, c3
     ).then(results => {
       // console.log(results);
       // Set loading to finished only after all images have loaded.

@@ -8,6 +8,8 @@ export default function PaletteDisplay({}) {
         // 200 / 500 / 1000
         require('nice-color-palettes')
     );
+
+    const [showAll, setShowAll] = useState(false);
     
     const {setC1, setC2, setC3} = useContext(PaletteContext);
 
@@ -17,7 +19,7 @@ export default function PaletteDisplay({}) {
     useEffect(() => {
         // Split palette into groups of 3's.
         var split = [];
-        palette.slice(0, 5).forEach(p => {
+        palette.forEach(p => {
             // Shuffle values around for more contrast.
             
             p = swapIndexes(p, 1, 3);
@@ -65,14 +67,21 @@ export default function PaletteDisplay({}) {
 
     return (
         <div className={styles.PaletteDisplay}>
-            {
-                splitPalette.map((hexArray, i) => (
-                    <div key={`p-${i}`}
-                        className={styles.PaletteWrapperOuter}>
-                        {paletteWrapper(hexArray, i)}
-                    </div>
-                ))
-            }
+            <div className={styles.inner}>
+                {
+                    (showAll ? splitPalette : splitPalette.slice(0,18)).map((hexArray, i) => (
+                        <div key={`p-${i}`}
+                            className={styles.PaletteWrapperOuter}>
+                            {paletteWrapper(hexArray, i)}
+                        </div>
+                    ))
+                }
+            </div>
+            <div className={styles.load_more + ' ' + (showAll ? styles.disabled : '')}
+                onClick={() => setShowAll(true)}    
+            >
+                { showAll ? "Loaded" : "Load More" } 
+            </div>
         </div>
     );
 }

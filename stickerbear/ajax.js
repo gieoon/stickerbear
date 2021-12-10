@@ -1,8 +1,14 @@
-import { API_SERVER } from './constants.js';
+import { API_SERVER, test_data, test_data_grid } from './constants.js';
 import {toRgbString} from './helpers.js';
 
 export async function getComponent(image, prompt, c1, c2, c3) {
-console.log(toRgbString(c2));
+
+    //TODO remove this.
+    return JSON.parse(
+        test_data_grid//test_data
+    );
+
+
     return await fetch(API_SERVER, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -21,19 +27,8 @@ console.log(toRgbString(c2));
     .then(res => {
         return res.json()
         .then(results => {
-            
-            // const out = [];
+            // console.log(JSON.stringify(results))
 
-            // for (var result of results) {
-                
-                
-            //     injectComponent(frame, result.html, index);
-            //     out.
-                
-            //     html2Png(frame, result.stylesheet, result.inline_styles, index);
-
-                
-            // }
             return results;
         })
     })

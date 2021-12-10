@@ -14,7 +14,7 @@ export default function Instructions({
     }
 
     const cond2 = () => {
-        return prompt.length > 1;
+        return prompt.length > 0;
     }
 
     const cond3 = () => {

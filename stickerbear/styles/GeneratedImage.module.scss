@@ -1,9 +1,10 @@
 $primary-color: #0070f3;
 
 .GeneratedImage {
-    width: 100%;
-    height: 100%;
-    margin: 30px auto;
+    // width: 325px;//500px;//100%;
+    // height: 375px;//100%;
+    // margin: 30px auto;
+    margin: 1rem;
     position: relative;
 
     // &:hover {
@@ -14,10 +15,12 @@ $primary-color: #0070f3;
     // }
 
     &.full_size {
+        width: 500px;
+        height: 500px;
         display: flex;
         align-items: flex-end;
         width: fit-content;
-        
+
         .iframe_wrapper {
             
         }
@@ -29,6 +32,8 @@ $primary-color: #0070f3;
     }
 
     &.grid {
+        width: 325px;
+        height: 375px;
         .iframe_wrapper {
             transform: scale(0.65);// translateX(-16.5%) translateY(-16.5%);
             transform-origin: 0 0;
