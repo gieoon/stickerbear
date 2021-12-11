@@ -2,18 +2,19 @@ import Head from 'next/head'
 import {createContext, useContext, useEffect, useRef, useState} from 'react';
 import Image from 'next/image'
 import styles from '../styles/Home.module.scss'
-import {APP_TITLE, APP_META_THUMBNAIL} from '../constants.js';
+import {APP_TITLE, APP_META_THUMBNAIL, APP_TWITTER} from '../constants.js';
 import GeneratedImage from '../components/GeneratedImage.jsx';
 import {getComponent} from '../ajax.js';
 import PaletteDisplay from '../components/PaletteDisplay';
 import CurrentPalette from '../components/CurrentPalette';
-import {PaletteContextProvider, ImageContextProvider, PaletteContext, ImageContext} from '../context';
+import {PaletteContextProvider, ImageContextProvider, PaletteContext, ImageContext, AnalyticsContextProvider, AnalyticsContext} from '../context';
 import ImageUpload from '../components/ImageUpload';
 import ImageLoader from '../components/ImageLoader';
 import HeaderPalette from '../components/HeaderPalette';
 import { ArrowRight, X, Grid, Square } from 'react-feather';
 import Instructions from '../components/Instructions';
 import InfiniteLoader_ from '../components/InfiniteLoader_';
+import { ANALYTICS_logEvent } from '../analytics';
 
 
 export default function Home() {
@@ -26,6 +27,12 @@ export default function Home() {
 
   useEffect(() => {
     document.getElementById('main-textarea').focus();
+
+    ANALYTICS_logEvent("page_view", {
+      page_location: window.location.href,
+      page_path: "/",
+      page_title: "HomePage",
+    }); 
   }, []);
 
   return (
@@ -37,178 +44,206 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-      <ImageContextProvider>
-        <Title 
-          prompt={prompt} 
-          isShowingPalette={isShowingPalette} />
+      <AnalyticsContextProvider>
+        <main className={styles.main}>
+          <ImageContextProvider>
+            <Title 
+              prompt={prompt} 
+              isShowingPalette={isShowingPalette}
+              generatedData={generatedData} />
 
-        <PaletteContextProvider>
-        
-            <div className={styles.text_and_image}>
-              <div className={styles.inner}>
-                <div className={styles.inputs_wrapper}>
+            <PaletteContextProvider>
+          
+              <div className={styles.text_and_image}>
+                <div className={styles.inner}>
+                  <div className={styles.inputs_wrapper}>
+                    <div>
+                      {/* <p className={styles.image_description}>Add an image to use, or leave blank for text-only.</p> */}
+                      
+                        <ImageUpload />
+
+                      <HeaderPalette goToPaletteView={() => setShowingPalette(true)} />
+                    </div>
+
+                    <div className={styles.main_input}>
+                      {/* <input value={prompt} onChange={(e) => {
+                        setPrompt(e.target.value);
+                      }} placeholder="My message here" /> */}
+                      <textarea 
+                        id="main-textarea"
+                        autoFocus={true}
+                        // value={prompt} 
+                        onChange={(e) => {
+                          // Only modify blank to displaying change.
+                          // Otherwise constant state change is too laggy.
+                          if (e.target.value.length > 0 && prompt.length === 0) {
+                            setPrompt(e.target.value);
+
+                            ANALYTICS_logEvent("prompt entered", {
+                              prompt: e.target.value,
+                            });
+                          }
+                          else if (e.target.value.length === 0 && prompt.length > 0) {
+                            setPrompt(e.target.value);
+                          }
+                        }} 
+                        placeholder="My message here" />
+                      {/* <div id="main-textarea" 
+                        contentEditable={true} 
+                        onChange={(e) => {
+                          // Only modify blank to displaying change.
+                          // Otherwise constant state change is too laggy.
+                          if (e.target.value.length > 0 && prompt.length === 0) {
+                            setPrompt(e.target.value);
+                          }
+                          else if (e.target.value.length === 0 && prompt.length > 0) {
+                            setPrompt(e.target.value);
+                          }
+                        }}/> */}
+                    </div>
+                    </div>
+
                   <div>
-                    {/* <p className={styles.image_description}>Add an image to use, or leave blank for text-only.</p> */}
-                    
-                      <ImageUpload />
-
-                    <HeaderPalette goToPaletteView={() => setShowingPalette(true)} />
+                    <CreateButton 
+                      // prompt={prompt} 
+                      setGeneratedData={setGeneratedData} 
+                      setLoading={setLoading}
+                      setShowingPalette={setShowingPalette} />
                   </div>
-
-                  <div className={styles.main_input}>
-                    {/* <input value={prompt} onChange={(e) => {
-                      setPrompt(e.target.value);
-                    }} placeholder="My message here" /> */}
-                    <textarea 
-                      id="main-textarea"
-                      autoFocus={true}
-                      // value={prompt} 
-                      onChange={(e) => {
-                        // Only modify blank to displaying change.
-                        // Otherwise constant state change is too laggy.
-                        if (e.target.value.length > 0 && prompt.length === 0) {
-                          setPrompt(e.target.value);
-                        }
-                        else if (e.target.value.length === 0 && prompt.length > 0) {
-                          setPrompt(e.target.value);
-                        }
-                      }} 
-                      placeholder="My message here" />
-                    {/* <div className={styles.search_btn} onClick={() => go()}>
-                      Create
-                    </div> */}
-                  </div>
-                  </div>
-
-                <div>
-                  <CreateButton 
-                    // prompt={prompt} 
-                    setGeneratedData={setGeneratedData} 
-                    setLoading={setLoading}
-                    setShowingPalette={setShowingPalette} />
                 </div>
               </div>
-            </div>
 
 
-          { loading 
-            ? <div style={{
-                height: isShowingPalette ? '10px' : 'fit-content',
-                overflow: 'hidden',
-                width: '100%',
-              }}>
-                <ImageLoader loading={loading}
-                  isViewingFull={isViewingFull} /> 
-            </div>
-            : generatedData.length === 0
-              ? <Instructions 
-                prompt={prompt}
-              />
-              : <div>
-                
+            { loading 
+              ? <div style={{
+                  height: isShowingPalette ? '10px' : 'fit-content',
+                  overflow: 'hidden',
+                  width: '100%',
+                }}>
+                  <ImageLoader loading={loading}
+                    isViewingFull={isViewingFull} /> 
               </div>
-          }
-
-          <div className={styles.middle_section}>
-
-            <div className={styles.palette_wrapper + ' ' + (isShowingPalette ? styles.showing : '')}>
-              <p id={styles.palette_description}>Choose from a selection of colors, or select your own.</p>
-              <CurrentPalette />
-              <PaletteDisplay />
-            </div>
-
-            { isShowingPalette //&& generatedData.length
-            ? <div className={styles.X_wrapper}>
-                <X className={styles.palette_X} 
-                  size={40}
-                  color='rgb(170,170,170)' 
-                  onClick={() => setShowingPalette(false)} />
-              </div>
-              : <></>
+              : generatedData.length === 0
+                ? <Instructions 
+                  prompt={prompt}
+                />
+                : <div>
+                  
+                </div>
             }
+
+            <div className={styles.middle_section}>
+
+              <div className={styles.palette_wrapper + ' ' + (isShowingPalette ? styles.showing : '')}>
+                <p id={styles.palette_description}>Choose from a selection of colors, or select your own.</p>
+                <CurrentPalette />
+                <PaletteDisplay />
+              </div>
+
+              { isShowingPalette //&& generatedData.length
+              ? <div className={styles.X_wrapper}>
+                  <X className={styles.palette_X} 
+                    size={40}
+                    color='rgb(170,170,170)' 
+                    onClick={() => {
+                      ANALYTICS_logEvent('Close palette view pressed', {});
+                      setShowingPalette(false);
+                    }} />
+                </div>
+                : <></>
+              }
+              </div>
+              </PaletteContextProvider>
+            </ImageContextProvider>
+          
+
+          { generatedData.length
+          ? <div className={styles.grid_wrapper}
+            style={{
+              height: isShowingPalette ? '10px' : 'fit-content',
+              overflow: 'hidden',
+            }}>
+              { isShowingPalette
+                ? <></>
+                : <div className={styles.view_type}>
+                  { isViewingFull
+                    ? <Grid className={styles.generated_X} 
+                      size={30}
+                      color='rgb(170,170,170)' 
+                      onClick={() => {
+                        ANALYTICS_logEvent('view grid layout pressed', {});
+                        setIsViewingFull(!isViewingFull);
+                      }} />
+                    : <Square className={styles.generated_X} 
+                      size={30}
+                      color='rgb(170,170,170)' 
+                      onClick={() => {
+                        ANALYTICS_logEvent('view full layout pressed', {});
+                        setIsViewingFull(!isViewingFull);
+                      }} />
+                  }
+                </div>
+              }
+            {/* + ' ' + (isShowingPalette ? '' : styles.showing) */}
+              {/* <div className={styles.grid + ' ' + (isViewingFull ? '' : styles.viewing_grid)}>
+                { generatedData.map((data, i) => (
+                    <div key={`generated-${i}`}
+                      className={isViewingFull ? '' : styles.viewing_grid}
+                    >
+                      <GeneratedImage 
+                        data={data} 
+                        isViewingFull={isViewingFull} 
+                        setLoading={setLoading} />
+                    </div>
+                  ))
+                }
+              </div> */}
+
+              <InfiniteLoader_
+                isViewingFull={isViewingFull}
+                hasNextPage={false}
+                isNextPageLoading={false}
+                data={generatedData}
+                loadNextPage={() => {}}
+              />
+              
+
+              {/* <div className={styles.loader_showing + " " + (loading ? styles.showing : '')}>
+                <div className={'loader'}></div>
+              </div> */}
             </div>
-            </PaletteContextProvider>
-          </ImageContextProvider>
+            : <></>
+          }
         
 
-        { generatedData.length
-        ? <div className={styles.grid_wrapper}
-          style={{
-            height: isShowingPalette ? '10px' : 'fit-content',
-            overflow: 'hidden',
-          }}>
-            { isShowingPalette
-              ? <></>
-              : <div className={styles.view_type}>
-                { isViewingFull
-                  ? <Grid className={styles.generated_X} 
-                    size={30}
-                    color='rgb(170,170,170)' 
-                    onClick={() => setIsViewingFull(!isViewingFull)} />
-                  : <Square className={styles.generated_X} 
-                    size={30}
-                    color='rgb(170,170,170)' 
-                    onClick={() => setIsViewingFull(!isViewingFull)} />
-                }
-              </div>
-            }
-          {/* + ' ' + (isShowingPalette ? '' : styles.showing) */}
-            {/* <div className={styles.grid + ' ' + (isViewingFull ? '' : styles.viewing_grid)}>
-              { generatedData.map((data, i) => (
-                  <div key={`generated-${i}`}
-                    className={isViewingFull ? '' : styles.viewing_grid}
-                  >
-                    <GeneratedImage 
-                      data={data} 
-                      isViewingFull={isViewingFull} 
-                      setLoading={setLoading} />
-                  </div>
-                ))
-              }
-            </div> */}
-
-            <InfiniteLoader_
-              isViewingFull={isViewingFull}
-              hasNextPage={false}
-              isNextPageLoading={false}
-              data={generatedData}
-              loadNextPage={() => {}}
-            />
-
-            {/* <div className={styles.loader_showing + " " + (loading ? styles.showing : '')}>
-              <div className={'loader'}></div>
-            </div> */}
-          </div>
+        { generatedData.length === 0
+          ? <footer className={styles.footer} onClick={() => {
+              ANALYTICS_logEvent('@Twitter visited', {});
+            }}>
+              {APP_TITLE} by {' '}
+              <span className={styles.logo}>
+                {/* <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} /> */}
+              </span>
+              <a className={styles.alexMakes}
+                  href={`https://twitter.com/${APP_TWITTER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >@{APP_TWITTER}</a>
+          </footer>
           : <></>
         }
-      
-
-      { generatedData.length === 0
-        ? <footer className={styles.footer}>
-          {APP_TITLE} by {' '}
-          <span className={styles.logo}>
-            {/* <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} /> */}
-          </span>
-          <a className={styles.alexMakes}
-              href="https://twitter.com/alexmakes"
-              target="_blank"
-              rel="noopener noreferrer"
-            >@AlexMakesAlex</a>
-        </footer>
-        : <></>
-      }
-      </main>
+        </main>
+      </AnalyticsContextProvider>
     </div>
   )
 }
 
 export const Title = ({
-  prompt, isShowingPalette
+  prompt, isShowingPalette, generatedData
 }) => {
   const {image} = useContext(ImageContext);
 
-  return prompt.length === 0 && image === '' && !isShowingPalette
+  return prompt.length === 0 && image === '' && !isShowingPalette && generatedData.length === 0
     ? <div className={styles.title_wrapper}>
         <h1 className={styles.title}>
           {APP_TITLE}
@@ -229,6 +264,7 @@ export const CreateButton = ({
 
   const {c1,c2,c3} = useContext(PaletteContext);
   const {image} = useContext(ImageContext);
+  const {numberOfTimesUserPressedCreate, setNumberOfTimesUserPressedCreate} = useContext(AnalyticsContext);
 
   const [prevState, setPrevState] = useState({
     c1: 'empty',
@@ -265,6 +301,20 @@ export const CreateButton = ({
       prompt: promptValue, //prompt,
       image: image,
     });
+
+    ANALYTICS_logEvent("create pressed", {
+      prompt: promptValue,
+      imgSrc: imgSrc,
+      c1: c1,
+      c2: c2,
+      c3: c3,
+      ['c1=>'+c1]: c1,
+      ['c2=>'+c2]: c2,
+      ['c3=>'+c3]: c3,
+      ['numberOfTimesUserPressedCreate=>'+numberOfTimesUserPressedCreate] : numberOfTimesUserPressedCreate,
+      numberOfTimesUserPressedCreate: numberOfTimesUserPressedCreate,
+    }); 
+    setNumberOfTimesUserPressedCreate(numberOfTimesUserPressedCreate + 1);
     
     // Need to create staggered loading.
     // Based on pagination, becasue a stream requires websockets.
@@ -275,7 +325,7 @@ export const CreateButton = ({
       // Set loading to finished only after all images have loaded.
       // global.imageLoadedCount = 0;
       // global.totalImagesToLoad = results.length;
-      
+      ANALYTICS_logEvent('Results loaded', {});
       setGeneratedData(results);
       setLoading(false);
     });

@@ -1,16 +1,20 @@
 import styles from '../styles/GeneratedImage.module.scss';
 import Frame from 'react-frame-component';
 import { APP_TITLE } from '../constants';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { useFrame } from 'react-frame-component';
+import { ANALYTICS_logEvent } from '../analytics';
+import { AnalyticsContext } from '../context';
 
 export default function GeneratedImage({
-    data, isViewingFull, setLoading,
+    index, data, isViewingFull, setLoading,
 }) {
     // console.log(data)
 
     const [downloadUrl, setDownloadUrl] = useState();
     const [imgSrc, setImgSrc] = useState();
+
+    const {numberDownloadedByUser, setNumberDownloadedByUser} = useContext(AnalyticsContext);
 
     // const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -121,7 +125,7 @@ export default function GeneratedImage({
                 <div //ref={readMeRef} 
                     className='read-me'
                     style={{
-                        // visibility:'hidden'
+                        visibility:'hidden'
                     }}
                     dangerouslySetInnerHTML={{__html: data.html}}
                 />
@@ -168,10 +172,22 @@ export default function GeneratedImage({
                     <InnerComponent />
                 </Frame>
             </div>
-            <div className={styles.download_wrapper}>
+            <div className={styles.download_wrapper} onClick={() => {
+                console.log("pressed, ", numberDownloadedByUser, isViewingFull, downloadUrl);
+                ANALYTICS_logEvent('Save image pressed', {
+                    index: index,
+                    numberDownloadedByUser: numberDownloadedByUser,
+                    ['numberDownloadedByUser=>' + numberDownloadedByUser]: numberDownloadedByUser,
+                    downloadUrl: downloadUrl.substring(0, 50),
+                    isViewingFull: isViewingFull ? 'Full layout' : 'Grid layout',
+                });
+                setNumberDownloadedByUser(numberDownloadedByUser + 1);
+            }}>
                 <a download={APP_TITLE.replace(/[ ]/g,'_').toLowerCase()}
                     href={downloadUrl}
-                    className={styles.download}>
+                    className={styles.download}
+                    onClick={() => {
+                    }}>
                     Save
                 </a>
             </div>

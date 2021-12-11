@@ -31,3 +31,19 @@ export const ImageContextProvider = (props) => {
         {props.children}
     </ImageContext.Provider>
 }
+
+export const AnalyticsContext = createContext();
+
+export const AnalyticsContextProvider = (props) => {
+    const [numberDownloadedByUser, setNumberDownloadedByUser] = useState(0);
+    const [numberOfTimesUserPressedCreate, setNumberOfTimesUserPressedCreate] = useState(0);
+
+    return <AnalyticsContext.Provider value={{
+        numberDownloadedByUser: numberDownloadedByUser,
+        setNumberDownloadedByUser: setNumberDownloadedByUser,
+        numberOfTimesUserPressedCreate: numberOfTimesUserPressedCreate,
+        setNumberOfTimesUserPressedCreate: setNumberOfTimesUserPressedCreate,
+    }}>
+        {props.children}
+    </AnalyticsContext.Provider>
+}

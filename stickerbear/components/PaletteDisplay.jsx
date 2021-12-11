@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import styles from '../styles/PaletteDisplay.module.scss';
 import {shuffle, swapIndexes} from '../helpers.js';
 import { PaletteContext } from "../context";
+import { ANALYTICS_logEvent } from "../analytics";
 
 export default function PaletteDisplay({}) {
     const [palette, setPalette] = useState(
@@ -52,6 +53,11 @@ export default function PaletteDisplay({}) {
         return <div //key={`hexarray-${i}`} 
             className={styles.PaletteWrapper + ' ' + (i === currentPalette ? styles.selected : '')}
             onClick={() => {
+                ANALYTICS_logEvent("palette selected", {
+                    index: i,
+                    hexArray: hexArray,
+                });
+
                 setC1(hexArray[0]);
                 setC2(hexArray[1]);
                 setC3(hexArray[2]);
@@ -78,7 +84,10 @@ export default function PaletteDisplay({}) {
                 }
             </div>
             <div className={styles.load_more + ' ' + (showAll ? styles.disabled : '')}
-                onClick={() => setShowAll(true)}    
+                onClick={() => {
+                    ANALYTICS_logEvent("Show all palettes pressed", {});
+                    setShowAll(true);
+                }}    
             >
                 { showAll ? "Loaded" : "Load More" } 
             </div>

@@ -73,6 +73,7 @@ export default function InfiniteLoader_({
             content = <div style={style}>
                 <div className={'row ' + styles.grid}>
                     <GeneratedImage 
+                        index={index}
                         data={items[index].html //isViewingFull 
                             ? items[index]
                             : items[index][0]} 
@@ -82,6 +83,7 @@ export default function InfiniteLoader_({
                         ? <></>
                         : items[index].length > 1 
                             ? <GeneratedImage 
+                                index={index}
                                 data={items[index][1]} 
                                 isViewingFull={false} 
                                 setLoading={()=>{}} />

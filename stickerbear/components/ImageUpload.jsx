@@ -3,6 +3,7 @@ import styles from '../styles/ImageUpload.module.scss';
 import { Image as ImageSVG } from 'react-feather';
 import { ImageContext } from '../context';
 import { X } from 'react-feather';
+import { ANALYTICS_logEvent } from '../analytics';
 
 export default function ImageUpload({
 
@@ -74,6 +75,7 @@ export default function ImageUpload({
                     {image.name
                         ? <X className={styles.X} 
                             onClick={() => {
+                            ANALYTICS_logEvent('image removed', {});
                             setImage("");
                             removeImage();
                         }} />
