@@ -21,10 +21,13 @@ export default function InfiniteLoader_({
         // Create grid data format.
         const out = [];
         for (var i=0;i<data.length;i+=2) {
-            out.push(data[i]);
+            var a = [];
+            a.push(data[i]);
             if (data.length > i + 1)
-                out.push(data[i+1]);
+                a.push(data[i+1]);
+            out.push(a);
         }
+        // console.log('isViewingFull: ', isViewingFull, out)
         setGridItems([...out]);
         init(out);
     }, [data]);
@@ -35,7 +38,7 @@ export default function InfiniteLoader_({
     }, [isViewingFull]);
     
     const init = (out) => {
-        console.log('isViewingFull: ', isViewingFull, out)
+        
         if (isViewingFull) {
             setItems(data);
             setItemCount(data.length);
@@ -46,9 +49,9 @@ export default function InfiniteLoader_({
         }
     }
 
-    useEffect(() => {
-        console.log(items, itemCount);
-    }, [items])
+    // useEffect(() => {
+    //     console.log(items, itemCount);
+    // }, [items])
 
     // const itemCount = hasNextPage 
     //     ? items.length + 1 
@@ -65,16 +68,16 @@ export default function InfiniteLoader_({
         if (!isItemLoaded(index)) {
             content = <div style={style}>Show loading image</div>;
         } else {
-            console.log(isViewingFull, items.length, index, items[index]);
+            // console.log(isViewingFull, items.length, index, items[index]);
             // content = "Show loaded image here!";
             content = <div style={style}>
                 <div className={'row ' + styles.grid}>
                     <GeneratedImage 
-                        data={isViewingFull 
+                        data={items[index].html //isViewingFull 
                             ? items[index]
                             : items[index][0]} 
                         isViewingFull={isViewingFull} 
-                        setLoading={()=>{}} />
+                        setLoading={()=>{}}  />
                     { isViewingFull
                         ? <></>
                         : items[index].length > 1 

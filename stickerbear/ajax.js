@@ -4,9 +4,9 @@ import {toRgbString} from './helpers.js';
 export async function getComponent(image, prompt, c1, c2, c3) {
 
     //TODO remove this.
-    return JSON.parse(
-        test_data_grid//test_data
-    );
+    // return JSON.parse(
+    //     test_data_grid//test_data
+    // );
 
 
     return await fetch(API_SERVER, {

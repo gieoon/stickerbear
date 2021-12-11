@@ -5,5 +5,7 @@
 
 .grid {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    width: calc(325px * 2 + 1rem + 1rem);
+    margin: auto;
 }

@@ -7,10 +7,12 @@ import { useFrame } from 'react-frame-component';
 export default function GeneratedImage({
     data, isViewingFull, setLoading,
 }) {
-    console.log(data)
+    // console.log(data)
 
     const [downloadUrl, setDownloadUrl] = useState();
     const [imgSrc, setImgSrc] = useState();
+
+    // const [imgLoaded, setImgLoaded] = useState(false);
 
     const iframeRef = useRef();
 
@@ -73,7 +75,7 @@ export default function GeneratedImage({
                 && imgSrc === undefined) {
                     // console.log('html2png');
                     // ++global.imageLoadedCount;
-                html2Png();
+                    html2Png();
             }
 
         }, [imgSrc]);
@@ -103,10 +105,11 @@ export default function GeneratedImage({
                             var imgURI = canvas
                                 .toDataURL("image/png")
                             setDownloadUrl(imgURI);
-                            
-                            if (global.imageLoadedCount === global.totalImagesToLoad) {
-                                setLoading(false);
-                            }
+                            // setImgLoaded(true);
+                            // console.log(global.imageLoadedCount, global.totalImagesToLoad);
+                            // if (global.imageLoadedCount === global.totalImagesToLoad) {
+                            //     setLoading(false);
+                            // }
                         }}
                     ref={imgRef}
                     style={{
@@ -122,6 +125,12 @@ export default function GeneratedImage({
                     }}
                     dangerouslySetInnerHTML={{__html: data.html}}
                 />
+
+                {/* {
+                    !imgLoaded
+                    ? <div className={styles.loading}>Loading...</div>
+                    : <></>
+                } */}
             </>
         )
     }

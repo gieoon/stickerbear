@@ -51,6 +51,12 @@ $primary-color: #0070f3;
     }
 }
 
+.loading {
+    position: absolute;
+    inset: 0;
+    background-color: green;
+}
+
 // .download_wrapper {
 //     display: flex;
 //     justify-content: center;

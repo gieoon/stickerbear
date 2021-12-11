@@ -98,7 +98,8 @@ export default function Home() {
                 overflow: 'hidden',
                 width: '100%',
               }}>
-                <ImageLoader loading={loading} /> 
+                <ImageLoader loading={loading}
+                  isViewingFull={isViewingFull} /> 
             </div>
             : generatedData.length === 0
               ? <Instructions 
@@ -137,18 +138,21 @@ export default function Home() {
             height: isShowingPalette ? '10px' : 'fit-content',
             overflow: 'hidden',
           }}>
-            <div className={styles.view_type}>
-              { isViewingFull
-                ? <Grid className={styles.generated_X} 
-                  size={30}
-                  color='rgb(170,170,170)' 
-                  onClick={() => setIsViewingFull(!isViewingFull)} />
-                : <Square className={styles.generated_X} 
-                  size={30}
-                  color='rgb(170,170,170)' 
-                  onClick={() => setIsViewingFull(!isViewingFull)} />
-              }
-            </div>
+            { isShowingPalette
+              ? <></>
+              : <div className={styles.view_type}>
+                { isViewingFull
+                  ? <Grid className={styles.generated_X} 
+                    size={30}
+                    color='rgb(170,170,170)' 
+                    onClick={() => setIsViewingFull(!isViewingFull)} />
+                  : <Square className={styles.generated_X} 
+                    size={30}
+                    color='rgb(170,170,170)' 
+                    onClick={() => setIsViewingFull(!isViewingFull)} />
+                }
+              </div>
+            }
           {/* + ' ' + (isShowingPalette ? '' : styles.showing) */}
             {/* <div className={styles.grid + ' ' + (isViewingFull ? '' : styles.viewing_grid)}>
               { generatedData.map((data, i) => (
@@ -251,8 +255,7 @@ export const CreateButton = ({
 
     console.log(c1, c2, c3, promptValue, imgSrc.substring(0, 100));
 
-    // TODO add this back in.
-    // setLoading(true);
+    setLoading(true);
     setShowingPalette(false);
 
     setPrevState({
@@ -270,11 +273,11 @@ export const CreateButton = ({
     ).then(results => {
       // console.log(results);
       // Set loading to finished only after all images have loaded.
-      global.imageLoadedCount = 0;
-      global.totalImagesToLoad = results.length;
+      // global.imageLoadedCount = 0;
+      // global.totalImagesToLoad = results.length;
       
       setGeneratedData(results);
-      
+      setLoading(false);
     });
   }
 

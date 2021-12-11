@@ -2,12 +2,12 @@
 import styles from '../styles/ImageLoader.module.scss';
 
 export default function ImageLoader({
-    loading,
+    loading, isViewingFull,
 }) {
     return (
         <div className={styles.ImageLoader + ' ' + (loading ? styles.showing : '')}>
-            <div className={styles.Inner}>
-                {
+            <div className={styles.Inner + ' ' + (isViewingFull ? styles.viewing_full : '')}>
+                { 
                     Array.from(Array(8)).map((n, i) => (
                         <div key={'image-loader-'+i} 
                             className={styles.wrapper}>
