@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {createContext, useContext, useEffect, useRef, useState} from 'react';
 import Image from 'next/image'
 import styles from '../styles/Home.module.scss'
-import {APP_TITLE, APP_META_THUMBNAIL, APP_TWITTER} from '../constants.js';
+import {APP_TITLE, APP_META_THUMBNAIL, APP_TWITTER, APP_EMAIL} from '../constants.js';
 import GeneratedImage from '../components/GeneratedImage.jsx';
 import {getComponent} from '../ajax.js';
 import PaletteDisplay from '../components/PaletteDisplay';
@@ -27,6 +27,7 @@ export default function Home() {
   const [isViewingFull, setIsViewingFull] = useState(false);
 
   useEffect(() => {
+    initFirebase();
     document.getElementById('main-textarea').focus();
 
     ANALYTICS_logEvent("page_view", {
@@ -34,8 +35,6 @@ export default function Home() {
       page_path: "/",
       page_title: "HomePage",
     }); 
-
-    initFirebase();
   }, []);
 
   return (
@@ -74,7 +73,7 @@ export default function Home() {
                       }} placeholder="My message here" /> */}
                       <textarea 
                         id="main-textarea"
-                        autoFocus={true}
+                        // autoFocus={true}
                         // value={prompt} 
                         onChange={(e) => {
                           // Only modify blank to displaying change.
@@ -232,6 +231,11 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >@{APP_TWITTER}</a>
+              <div className={styles.email}>
+                <a href={`mailto:${APP_EMAIL}`}>
+                  {APP_EMAIL}
+                </a>
+              </div>
           </footer>
           : <></>
         }

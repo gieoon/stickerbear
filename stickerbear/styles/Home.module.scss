@@ -208,6 +208,26 @@ $size: 300px;
   background-color: #f0f0f0;//rgb(250,250,250);
   height: 100px;
   // color: white;
+
+  .email {
+    text-decoration: underline;
+    margin-left: 25px;
+    font-size: 15px;
+    position: relative;
+
+    &:hover {
+      opacity: .75;
+    }
+
+    &:before {
+      content: "/";
+      position: absolute;
+      left: -15px;
+      font-size: 25px;
+      top: -5px;
+      font-weight: 200;
+    }
+  }
 }
 
 .footer a {
