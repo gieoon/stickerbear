@@ -44,7 +44,7 @@ export default function Home() {
         <title>Make your social media stand out - {APP_TITLE}</title>
         <meta name="description" content="Make your social media stand out with eye-catching posts." />
         <meta name="thumbnail" content={APP_META_THUMBNAIL} />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/type.svg" />
       </Head>
 
       <AnalyticsContextProvider>
