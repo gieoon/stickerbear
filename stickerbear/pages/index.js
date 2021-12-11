@@ -321,6 +321,7 @@ export const CreateButton = ({
       ['numberOfTimesUserPressedCreate=>'+numberOfTimesUserPressedCreate] : numberOfTimesUserPressedCreate,
       numberOfTimesUserPressedCreate: numberOfTimesUserPressedCreate,
     }); 
+    ANALYTICS_logEvent('prompt=>' + promptValue, {});
     setNumberOfTimesUserPressedCreate(numberOfTimesUserPressedCreate + 1);
     
     // Need to create staggered loading.

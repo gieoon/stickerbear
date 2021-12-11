@@ -1,4 +1,4 @@
-const ENVIRONMENT = 
+export const ENVIRONMENT = 
 	// "DEVELOP";
 	"PRODUCTION";
 

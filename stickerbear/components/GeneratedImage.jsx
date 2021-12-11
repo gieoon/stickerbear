@@ -173,7 +173,7 @@ export default function GeneratedImage({
                 </Frame>
             </div>
             <div className={styles.download_wrapper} onClick={() => {
-                console.log("pressed, ", numberDownloadedByUser, isViewingFull, downloadUrl);
+                // console.log("pressed, ", numberDownloadedByUser, isViewingFull, downloadUrl);
                 ANALYTICS_logEvent('Save image pressed', {
                     index: index,
                     numberDownloadedByUser: numberDownloadedByUser,
