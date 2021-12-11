@@ -15,7 +15,8 @@ import { ArrowRight, X, Grid, Square } from 'react-feather';
 import Instructions from '../components/Instructions';
 import InfiniteLoader_ from '../components/InfiniteLoader_';
 import { ANALYTICS_logEvent } from '../analytics';
-
+import '../firebaseConfig';
+import { initFirebase } from '../firebaseConfig';
 
 export default function Home() {
 
@@ -33,6 +34,8 @@ export default function Home() {
       page_path: "/",
       page_title: "HomePage",
     }); 
+
+    initFirebase();
   }, []);
 
   return (
