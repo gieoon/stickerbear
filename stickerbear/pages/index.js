@@ -49,10 +49,13 @@ export default function Home() {
         <link rel="icon" href={APP_FAVICON} />
 
         {/* OpenGraph */}
+        <meta property="og:type" content="website" />
         <meta property="og:url" content={APP_URL} />
         <meta property="og:image" content={APP_META_THUMBNAIL} />
         <meta property="og:title" content={APP_TITLE} />
         <meta property="og:description" content={APP_DESCRIPTION} />
+
+        <meta property="twitter:site:id" content={APP_TWITTER} />
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       </Head>
