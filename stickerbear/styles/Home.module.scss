@@ -78,6 +78,22 @@ $size: 300px;
     &:hover {
       opacity: .75;
     }
+
+    &.first_time {
+      &:after {
+        content: '• Free forever \A • No credit card required';
+        white-space: pre;
+        position: absolute;
+        bottom: -36px;
+        line-height: 15px;
+        left: 0;
+        text-align: left;
+        font-size: 12px;
+        opacity: .5;
+        color: black;
+        font-weight: 400;
+      }
+    }
   }
 }
 
@@ -209,11 +225,25 @@ $size: 300px;
   height: 100px;
   // color: white;
 
+  .app_title {
+    font-weight: 600;
+
+    &::after {
+      content: '©';
+      font-size: 16px;
+      display: inline-block;
+      transform: translateY(4px);
+      margin-right: 6px;
+    }
+  }
+
   .email {
     text-decoration: underline;
     margin-left: 25px;
     font-size: 15px;
     position: relative;
+    
+    display: none; // REMOVED for now.
 
     &:hover {
       opacity: .75;
@@ -238,13 +268,16 @@ $size: 300px;
 }
 
 .title {
-  color: #0070f3;
+  // color: #0070f3;
+  // color: rgb(68,68,68);
+  // opacity: .75;
   text-decoration: none;
+  letter-spacing: 2px;
 
-  &::after {
-    content: '©';
-    font-size: 25px;
-  }
+  // &::after {
+  //   content: '©';
+  //   font-size: 25px;
+  // }
 }
 
 .title:hover,
@@ -257,6 +290,16 @@ $size: 300px;
   margin: 0;
   line-height: 1.15;
   font-size: 3rem;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  justify-content: center;
+  // background-color: $primary-color;
+  // color: white;
+
+  img {
+    transform: translateX(-10px) translateY(2px);
+  }
 }
 
 .title,

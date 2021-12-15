@@ -222,7 +222,9 @@ export default function Home() {
           ? <footer className={styles.footer} onClick={() => {
               ANALYTICS_logEvent('@Twitter visited', {});
             }}>
-              {APP_TITLE} by {' '}
+              <span className={styles.app_title}>
+                {APP_TITLE}
+              </span> by {' '}
               <span className={styles.logo}>
                 {/* <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} /> */}
               </span>
@@ -253,6 +255,7 @@ export const Title = ({
   return prompt.length === 0 && image === '' && !isShowingPalette && generatedData.length === 0
     ? <div className={styles.title_wrapper}>
         <h1 className={styles.title}>
+          <Image src={'/pixelspuppy.png'} width={75} height={75} />
           {APP_TITLE}
         </h1>
         <p className={styles.description}>
@@ -340,7 +343,7 @@ export const CreateButton = ({
   }
 
   return (
-    <div className={styles.create_btn + ' ' + (isSame() ? styles.disabled : '')} 
+    <div className={styles.create_btn + ' ' + (isSame() ? styles.disabled : '') + ' ' + (numberOfTimesUserPressedCreate === 0 ? styles.first_time : '')} 
       onClick={() => {
         setGeneratedData([]);
         go();
