@@ -109,3 +109,28 @@ $size: 325px;
         background-position: 468px 0;
     }
 }
+
+@media (max-width: 600px) {
+    .ImageLoader {
+        .Inner {
+            .wrapper {
+                width: fit-content!important;
+                height: 400px!important;
+                
+                .cell {
+                    
+                    flex-direction: column!important;
+
+                    .image {
+                        width: 325px!important;
+                        height: 325px!important;
+                    }
+
+                    .text_line {
+                        margin-top: 15px!important;
+                    }
+                }
+            }
+        }
+    }
+}

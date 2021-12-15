@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {createContext, useContext, useEffect, useRef, useState} from 'react';
 import Image from 'next/image'
 import styles from '../styles/Home.module.scss'
-import {APP_TITLE, APP_META_THUMBNAIL, APP_TWITTER, APP_EMAIL} from '../constants.js';
+import {APP_NAME, APP_TITLE, APP_DESCRIPTION, APP_META_THUMBNAIL, APP_TWITTER, APP_EMAIL, APP_URL, APP_FAVICON} from '../constants.js';
 import GeneratedImage from '../components/GeneratedImage.jsx';
 import {getComponent} from '../ajax.js';
 import PaletteDisplay from '../components/PaletteDisplay';
@@ -35,15 +35,26 @@ export default function Home() {
       page_path: "/",
       page_title: "HomePage",
     }); 
+    if(window.innerWidth < 600) {
+      setIsViewingFull(true);
+    }
   }, []);
 
   return (
     <div className={styles.container}>
       <Head>
-        <title>Make your social media stand out - {APP_TITLE}</title>
-        <meta name="description" content="Make your social media stand out with eye-catching posts." />
+        <title>{APP_TITLE}</title>
+        <meta name="description" content={APP_DESCRIPTION} />
         <meta name="thumbnail" content={APP_META_THUMBNAIL} />
-        <link rel="icon" href="/socialimagecreator_white.png" />
+        <link rel="icon" href={APP_FAVICON} />
+
+        {/* OpenGraph */}
+        <meta property="og:url" content={APP_URL} />
+        <meta property="og:image" content={APP_META_THUMBNAIL} />
+        <meta property="og:title" content={APP_TITLE} />
+        <meta property="og:description" content={APP_DESCRIPTION} />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       </Head>
 
       <AnalyticsContextProvider>
@@ -56,7 +67,7 @@ export default function Home() {
 
             <PaletteContextProvider>
           
-              <div className={styles.text_and_image}>
+              <div className={styles.text_and_image + ' ' + (generatedData.length > 0 ? styles.fixed : '')}>
                 <div className={styles.inner}>
                   <div className={styles.inputs_wrapper}>
                     <div>
@@ -116,7 +127,7 @@ export default function Home() {
               </div>
 
 
-            { loading 
+            { loading
               ? <div style={{
                   height: isShowingPalette ? '10px' : 'fit-content',
                   overflow: 'hidden',
@@ -223,7 +234,7 @@ export default function Home() {
               ANALYTICS_logEvent('@Twitter visited', {});
             }}>
               <span className={styles.app_title}>
-                {APP_TITLE}
+                {APP_NAME}
               </span> by {' '}
               <span className={styles.logo}>
                 {/* <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} /> */}
@@ -256,7 +267,7 @@ export const Title = ({
     ? <div className={styles.title_wrapper}>
         <h1 className={styles.title}>
           {/* <Image src={'/pixelspuppy.png'} width={75} height={75} /> */}
-          {APP_TITLE}
+          {APP_NAME}
         </h1>
         <p className={styles.description}>
               {/* and drive engagement */}

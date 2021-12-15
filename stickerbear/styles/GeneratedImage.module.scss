@@ -49,6 +49,7 @@ $primary-color: #0070f3;
             // transform-origin: right; // top right;
         }
     }
+
 }
 
 .loading {
@@ -104,6 +105,29 @@ $primary-color: #0070f3;
 
         &:hover {
             opacity: .75;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .GeneratedImage {
+        width: 325px!important;
+        height: 375px!important;
+        margin: auto;
+
+        .iframe_wrapper {
+            transform: scale(0.65);// translateX(-16.5%) translateY(-16.5%);
+            transform-origin: left bottom;
+            width: 500px;
+            height: 500px;
+        }
+
+        .download_wrapper {
+            position: absolute;
+            // bottom: 32%!important;
+            // margin: 0px 0 15px;
+            bottom: -35px;
+            right: 0;
         }
     }
 }

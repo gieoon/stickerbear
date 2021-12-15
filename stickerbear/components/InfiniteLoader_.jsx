@@ -16,6 +16,11 @@ export default function InfiniteLoader_({
     const [items, setItems] = useState([]);
     const [itemCount, setItemCount] = useState(0);
     const [gridItems, setGridItems] = useState([]);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 600);
+    }, []);
 
     useEffect(() => {
         // Create grid data format.
@@ -110,7 +115,7 @@ export default function InfiniteLoader_({
                                 className="List"
                                 height={height}
                                 itemCount={itemCount}
-                                itemSize={isViewingFull ? 550 : 400}
+                                itemSize={isMobile ? 400 : isViewingFull ? 550 : 400}
                                 width={width}
                                 ref={ref}
                             >

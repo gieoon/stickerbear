@@ -417,8 +417,87 @@ $size: 300px;
 }
 
 @media (max-width: 600px) {
+  .main {
+    max-width: 100vw;
+    overflow: hidden;
+  }
+
   .grid {
     width: 100%;
     flex-direction: column;
   }
+
+  .title {
+    height: fit-content!important;
+  }
+
+  .text_and_image {
+    padding: 0!important;
+
+    &.fixed {
+      // position: fixed!important;
+    }
+
+    .main_input {
+      textarea {
+        max-width: 100vw!important;
+      }
+    }
+  }
+
+  .view_type {
+    display: none;
+  }
+
+  .inputs_wrapper {
+    flex-wrap: wrap;
+    width: 100vw;
+
+    > div:nth-child(1) {
+      display: flex;
+      width: 100vw;
+    }
+  }
+
+  .inner {
+    flex-direction: column;
+    align-items: initial!important;
+
+    .create_btn {
+      
+      margin: 1rem 0!important;
+
+      &.first_time {
+        
+        margin: 1rem 0 3rem!important;
+
+        &:after {
+          content: '• Free forever • No credit card required'!important;
+          // bottom: initial!important;
+          bottom: -25px!important;
+          left: 5px!important;
+          // left: calc(100% + 10px)!important;
+        }
+      }
+    }
+  }
+
+  .middle_section {
+    z-index: 9!important;
+    top: 0!important;
+    max-height: 100vh!important;
+
+    .palette_wrapper {
+      margin-top: 6rem!important;
+    }
+
+    .X_wrapper {
+      top: 15px!important;
+      background-color: white;
+      height: initial!important;
+      box-shadow: 0 0 2px rgba(0,0,0,.15);
+      padding: .35rem;
+    }
+  }
+
 }

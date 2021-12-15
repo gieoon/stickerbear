@@ -1,6 +1,6 @@
 import styles from '../styles/GeneratedImage.module.scss';
 import Frame from 'react-frame-component';
-import { APP_TITLE } from '../constants';
+import { APP_NAME } from '../constants';
 import { useEffect, useState, useRef, useContext } from 'react';
 import { useFrame } from 'react-frame-component';
 import { ANALYTICS_logEvent } from '../analytics';
@@ -183,7 +183,7 @@ export default function GeneratedImage({
                 });
                 setNumberDownloadedByUser(numberDownloadedByUser + 1);
             }}>
-                <a download={APP_TITLE.replace(/[ ]/g,'_').toLowerCase()}
+                <a download={APP_NAME.replace(/[ ]/g,'_').toLowerCase()}
                     href={downloadUrl}
                     className={styles.download}
                     onClick={() => {

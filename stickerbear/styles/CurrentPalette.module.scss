@@ -28,6 +28,12 @@
     ::-moz-color-swatch{
         border:none;
     }
+}
 
-    
+@media (max-width: 600px) {
+    .CurrentPalette {
+        input[type="color"] {
+            height: 75px!important;
+        }
+    }
 }
