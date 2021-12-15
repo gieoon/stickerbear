@@ -13,7 +13,7 @@ export const APP_TWITTER = "AlexMakesBits";
 export const APP_FAVICON = "/socialimagecreator_white.png";
 export const APP_EMAIL = "alex.makes.alex@gmail.com";
 
-export const APP_META_THUMBNAIL = "/socialimagecreator_thumbnail.png";
+export const APP_META_THUMBNAIL = "https://www.socialimagecreator.com/socialimagecreator_thumbnail.png";
 export const APP_URL = "https://www.socialimagecreator.com";
 export const test_data = `[
     {
