@@ -12,7 +12,7 @@ export const APP_TWITTER = "AlexMakesBits";
 
 export const APP_EMAIL = "alex.makes.alex@gmail.com";
 
-export const APP_META_THUMBNAIL = "";
+export const APP_META_THUMBNAIL = "/socialimagecreator_thumbnail.png";
 
 export const test_data = `[
     {
