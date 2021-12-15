@@ -43,7 +43,7 @@ export default function Home() {
         <title>Make your social media stand out - {APP_TITLE}</title>
         <meta name="description" content="Make your social media stand out with eye-catching posts." />
         <meta name="thumbnail" content={APP_META_THUMBNAIL} />
-        <link rel="icon" href="/type.svg" />
+        <link rel="icon" href="/socialimagecreator_white.png" />
       </Head>
 
       <AnalyticsContextProvider>
@@ -255,7 +255,7 @@ export const Title = ({
   return prompt.length === 0 && image === '' && !isShowingPalette && generatedData.length === 0
     ? <div className={styles.title_wrapper}>
         <h1 className={styles.title}>
-          <Image src={'/pixelspuppy.png'} width={75} height={75} />
+          {/* <Image src={'/pixelspuppy.png'} width={75} height={75} /> */}
           {APP_TITLE}
         </h1>
         <p className={styles.description}>

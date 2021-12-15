@@ -1,12 +1,12 @@
 export const ENVIRONMENT = 
-	"DEVELOP";
-	// "PRODUCTION";
+	// "DEVELOP";
+	"PRODUCTION";
 
 export const API_SERVER = ENVIRONMENT === "DEVELOP"
 	? "http://localhost:5000/generate-multiple"
 	: "https://alexmakesbits.pythonanywhere.com/generate-multiple";
 
-export const APP_TITLE = "Pixelspuppy";//"Social Image Creator";
+export const APP_TITLE = "Social Image Creator"; // "Pixelspuppy";//
 
 export const APP_TWITTER = "AlexMakesBits";
 

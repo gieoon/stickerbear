@@ -230,7 +230,7 @@ $size: 300px;
 
     &::after {
       content: '©';
-      font-size: 16px;
+      font-size: 12px;
       display: inline-block;
       transform: translateY(4px);
       margin-right: 6px;
@@ -269,15 +269,15 @@ $size: 300px;
 
 .title {
   // color: #0070f3;
-  // color: rgb(68,68,68);
+  color: rgb(68,68,68);
   // opacity: .75;
   text-decoration: none;
-  letter-spacing: 2px;
+  // letter-spacing: 2px;
 
-  // &::after {
-  //   content: '©';
-  //   font-size: 25px;
-  // }
+  &::after {
+    content: '©';
+    font-size: 25px;
+  }
 }
 
 .title:hover,
@@ -290,10 +290,10 @@ $size: 300px;
   margin: 0;
   line-height: 1.15;
   font-size: 3rem;
-  display: flex;
-  align-items: center;
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
   height: 60px;
-  justify-content: center;
   // background-color: $primary-color;
   // color: white;
 
