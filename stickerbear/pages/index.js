@@ -274,7 +274,8 @@ export const Title = ({
         </h1>
         <p className={styles.description}>
               {/* and drive engagement */}
-          Make your social media stand out with eye-catching images.
+          {/* Make your social media stand out with eye-catching images. */}
+          {APP_DESCRIPTION}
           {/* messages */}
           {/* <code className={styles.code}>pages/index.js</code> */}
         </p>

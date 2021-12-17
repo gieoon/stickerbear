@@ -201,6 +201,10 @@ $size: 300px;
 
 .title_wrapper {
   padding: 2.5rem 0 0 0;
+  
+  // p {
+  //   max-width: 550px;
+  // }
 }
 
 .main {
@@ -290,6 +294,8 @@ $size: 300px;
   margin: 0;
   line-height: 1.15;
   font-size: 3rem;
+  padding: 0 1rem;
+  
   // display: flex;
   // align-items: center;
   // justify-content: center;

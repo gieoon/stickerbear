@@ -7,8 +7,8 @@ export const API_SERVER = ENVIRONMENT === "DEVELOP"
 	: "https://alexmakesbits.pythonanywhere.com/generate-multiple";
 
 export const APP_NAME = "Social Image Creator"; // "Pixelspuppy";//
-export const APP_TITLE = "Make your Facebook posts stand out - " + APP_NAME;
-export const APP_DESCRIPTION = "Make your social media stand out with eye-catching posts.";
+export const APP_TITLE = "Turn your text into an image to use for social media."; //"Make your Facebook posts stand out - " + APP_NAME;
+export const APP_DESCRIPTION = "Turn your text into awesome images to post to Facebook, Instagram, Twitter, etc."; //"Make your social media stand out with eye-catching posts.";
 export const APP_TWITTER = "AlexMakesBits";
 export const APP_FAVICON = "/socialimagecreator_white.png";
 export const APP_EMAIL = "alex.makes.alex@gmail.com";

@@ -42,7 +42,8 @@ export default function Instructions({
             <Conditional 
                 n={2}
                 cond={cond2}
-                text={" Type your message"} />
+                //text={" Type your message"} 
+                text={" Add your text"}/>
             <Conditional
                 n={3}
                 cond={cond3}
@@ -50,7 +51,7 @@ export default function Instructions({
             <Conditional
                 n={4}
                 cond={() => false}
-                text={" Create"} />
+                text={" Create & save the images you want!"} />
         </div>
     )
 }
