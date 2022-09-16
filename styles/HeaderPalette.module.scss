@@ -1,0 +1,62 @@
+$size: 65px;
+$height: 32px;
+$primary-color: #0070f3;
+
+.HeaderPalette {
+    // border-radius: 999px;
+    overflow: hidden;
+    background-color: white;
+    
+    // border:4px solid white;
+    width: calc($size * 3);
+    // height: $height;
+    box-sizing: border-box;
+    padding: 10px;
+    padding-top: 0;
+    
+    // box-shadow: 0 0 4px rgba(0,0,0,0.15);
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+        opacity: .75;
+
+        &:after {
+            // opacity: 1;
+        }
+    }
+
+    .inner {
+        display: flex;
+        border: 4px solid $primary-color;
+        background-color: $primary-color;
+
+        > div { 
+            width: $size;
+            height: $height;
+        }
+    }
+    
+    &:after {
+        content: "Edit";
+        color: white;
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0,0,0,.5);
+        opacity: 0;
+
+    }
+}
+
+@media (max-width: 600px) {
+    .HeaderPalette {
+        width: 50%;
+        padding-top: 10px!important;
+
+        .inner {
+            > div {
+                height: 72px!important;
+            }
+        }
+    }
+}

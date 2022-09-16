@@ -1,0 +1,133 @@
+$primary-color: #0070f3;
+
+.GeneratedImage {
+    // width: 325px;//500px;//100%;
+    // height: 375px;//100%;
+    // margin: 30px auto;
+    margin: 1rem;
+    position: relative;
+
+    // &:hover {
+    //     .download_wrapper {
+    //         opacity: 1;
+    //         pointer-events: all;
+    //     }
+    // }
+
+    &.full_size {
+        width: 500px;
+        height: 500px;
+        display: flex;
+        align-items: flex-end;
+        width: fit-content;
+
+        .iframe_wrapper {
+            
+        }
+        
+        .download_wrapper {
+            margin-left: 25px;
+        }
+        
+    }
+
+    &.grid {
+        width: 325px;
+        height: 375px;
+        .iframe_wrapper {
+            transform: scale(0.65);// translateX(-16.5%) translateY(-16.5%);
+            transform-origin: 0 0;
+            width: 500px;
+            height: 500px;
+        }
+        .download_wrapper {
+            position: absolute;
+            bottom: 0;
+            margin: 0px 0 15px;
+            right: 0;
+            // transform: scale(1.5);
+            // transform-origin: right; // top right;
+        }
+    }
+
+}
+
+.loading {
+    position: absolute;
+    inset: 0;
+    background-color: green;
+}
+
+// .download_wrapper {
+//     display: flex;
+//     justify-content: center;
+//     position: absolute;
+//     inset: 0;
+//     background-color: rgba(0, 112, 243, .75);
+//     cursor: pointer;
+//     color: white;
+//     align-items: center;
+//     letter-spacing: 1px;
+//     font-weight: 600;
+
+//     opacity: 0;
+//     pointer-events: none;
+
+//     .download {
+//         color: white;
+//         text-align: center;
+//         font-size: 35px;
+//         cursor: pointer;
+
+//         &:hover {
+//             opacity: .75;
+//         }
+//     }
+// }
+
+
+.download_wrapper {
+    display: flex;
+    justify-content: flex-end;
+    
+    .download {
+        border-radius: 16px;
+        background-color: rgb(221,221,221);//$primary-color;
+        // margin: 10px 0;
+        // padding: 10px;
+        width: 75px;
+        height: 25px;
+        color: white;
+        text-align: center;
+        line-height: 25px;
+        font-size: 16px;
+        cursor: pointer;
+
+        &:hover {
+            opacity: .75;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .GeneratedImage {
+        width: 325px!important;
+        height: 375px!important;
+        margin: auto;
+
+        .iframe_wrapper {
+            transform: scale(0.65);// translateX(-16.5%) translateY(-16.5%);
+            transform-origin: left bottom;
+            width: 500px;
+            height: 500px;
+        }
+
+        .download_wrapper {
+            position: absolute;
+            // bottom: 32%!important;
+            // margin: 0px 0 15px;
+            bottom: -35px;
+            right: 0;
+        }
+    }
+}

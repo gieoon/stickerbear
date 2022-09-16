@@ -1,0 +1,22 @@
+.InfiniteLoader {
+    height: calc(100vh - 182px);
+    width: 100%;
+}
+
+.grid {
+    display: flex;
+    justify-content: flex-start;
+    width: calc(325px * 2 + 1rem + 1rem);
+    margin: auto;
+}
+
+@media (max-width: 600px) {
+    .InfiniteLoader {
+        
+        height: calc(100vh - 336px)!important;
+
+        .grid {
+            width: 100%!important;
+        }
+    }
+}
